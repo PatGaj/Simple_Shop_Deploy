@@ -12,6 +12,17 @@
   --font-mono: var(--font-geist-mono);
 }
 
+@theme {
+  /* Base */
+  --color-footer: #222327;
+  --color-tile: #262626;
+  --color-tile-border: #616674;
+  --color-logo-primary: #f29145;
+  --color-textColor-primary: #fcfcfcfc;
+  --color-textColor-secondary: #e7e7e7e7;
+  --color-payment-border: #383b42;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
