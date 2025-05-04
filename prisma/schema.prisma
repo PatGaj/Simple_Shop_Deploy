@@ -1,73 +1,76 @@
 generator client {
   provider = "prisma-client-js"
-  output = "../app/generated/prisma"
+  output   = "../app/generated/prisma/client"
 }
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  email String @unique
-  firstName String?
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  firstName    String?
   passwordHash String
-  address String
-  awatarUrl String
-  orders Order[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  address      String
+  awatarUrl    String
+  phone        Number
+  orders       Order[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Category {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int       @id @default(autoincrement())
+  name        String
   description String
-  imageUrl String
+  imageUrl    String
   exploreInfo String
-  products Product[]
+  products    Product[]
 }
 
 model Brand {
-  id Int @id @default(autoincrement())
-  name String
-  products Product[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        Int       @id @default(autoincrement())
+  name      String
+  imageUrl  String
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Product {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int         @id @default(autoincrement())
+  name        String
   description String?
-  price Float
-  stock Int
-  imageUrl String
-  categoryId Int
-  brandId Int
-  category Category @relation(fields: [categoryId], references: [id])
-  brand Brand @relation(fields: [brandId], references: [id])
-  orderItems OrderItem[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  price       Float
+  discount    Float?
+  stock       Int
+  imageUrl    String
+  categoryId  Int
+  brandId     Int
+  category    Category    @relation(fields: [categoryId], references: [id])
+  brand       Brand       @relation(fields: [brandId], references: [id])
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Order {
-  id Int @id @default(autoincrement())
-  userId Int
-  status String
-  user User @relation(fields: [userId], references: [id])
+  id         Int         @id @default(autoincrement())
+  userId     Int
+  status     String
+  user       User        @relation(fields: [userId], references: [id])
   orderItems OrderItem[]
-  total Float
-  createdAt DateTime @default(now())
+  total      Float
+  createdAt  DateTime    @default(now())
 }
 
 model OrderItem {
-  id Int @id @default(autoincrement())
-  orderId Int
+  id        Int     @id @default(autoincrement())
+  orderId   Int
   productId Int
-  quantity Int
-  product Product @relation(fields: [productId], references: [id])
-  order Order @relation(fields: [orderId], references: [id])
+  quantity  Int
+  product   Product @relation(fields: [productId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id])
 }
