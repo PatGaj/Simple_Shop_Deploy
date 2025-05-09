@@ -1,14 +1,24 @@
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
-  const id = Number(context.params.id);
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ message: "Nieautoryzowany" }, { status: 401 });
+  }
+
+  const requestedId = Number(params.id);
+  const currentUserId = Number(session.user.id);
+
+  if (requestedId !== currentUserId) {
+    return NextResponse.json({ message: "Brak dostępu" }, { status: 403 });
+  }
+
   try {
     const product = await prisma.product.findUnique({
-      where: { id: Number(id) },
+      where: { id: requestedId },
       select: {
         id: true,
         name: true,
