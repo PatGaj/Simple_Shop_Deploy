@@ -1,12 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: Request) {
-  const fullUrl = request.url;
-
-  const url = new URL(fullUrl);
-  const segments = url.pathname.split("/").filter(Boolean);
-  const id = segments[segments.length - 1];
+export async function GET(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
+  const id = Number(context.params.id);
   try {
     const product = await prisma.product.findUnique({
       where: { id: Number(id) },
