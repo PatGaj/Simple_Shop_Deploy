@@ -37,7 +37,7 @@ export function useCheckoutLogic() {
     }
     (async () => {
       const ids = localItems.map(li => parseInt(li.id, 10)).filter(n => !isNaN(n));
-      const res = await fetch("/api/cart", {
+      const res = await fetch(`${process.env.NEXTAUTH_URL || ''}/api/cart`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(ids),
@@ -75,14 +75,14 @@ export function useCheckoutLogic() {
 
   const handlePay = useCallback(async () => {
     if (makeMain && address.trim()) {
-      await fetch("/api/user/address", {
+      await fetch(`${process.env.NEXTAUTH_URL || ''}/api/user/address`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...parseAddress(address), makeMain }),
       });
     }
     const userId = session?.user?.id;
-    await fetch("/api/success", {
+    await fetch(`${process.env.NEXTAUTH_URL || ''}/api/success`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -14,7 +14,7 @@ function Carousel() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("/api/category?fields=name,imageUrl,description");
+        const res = await fetch(`${process.env.NEXTAUTH_URL || ''}/api/category?fields=name,imageUrl,description`);
         const data = await res.json();
         setCategories(data);
       } catch (error) {

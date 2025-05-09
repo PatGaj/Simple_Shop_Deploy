@@ -49,7 +49,7 @@ export function useCreateAccountLogic() {
   const onSubmit = async (data: FormData) => {
     const { ...sanitized } = data;
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch(`${process.env.NEXTAUTH_URL || ''}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sanitized),

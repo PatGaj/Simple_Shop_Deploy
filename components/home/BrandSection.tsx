@@ -9,7 +9,7 @@ export default function BrandSection() {
 
   useEffect(() => {
     const fetchBrands = async () => {
-      const res = await fetch("/api/brand?fields=name,imageUrl");
+      const res = await fetch(`${process.env.NEXTAUTH_URL || ''}/api/brand?fields=name,imageUrl`);
       const data = await res.json();
       setBrands(data);
     };
