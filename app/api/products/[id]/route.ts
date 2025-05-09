@@ -1,11 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextApiRequest } from "next";
+import { NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<NextResponse> {
-  const { id } = await params;
+export async function GET(req: NextApiRequest) {
+  const { id } = req.query;
 
   try {
     const product = await prisma.product.findUnique({
