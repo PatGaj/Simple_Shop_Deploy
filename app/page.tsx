@@ -1,3 +1,4 @@
+"use client";
 import Carousel from "@/components/home/carousel/Carousel";
 import BrandSection from "@/components/home/BrandSection";
 import CategorySection from "@/components/home/CategorySection";
