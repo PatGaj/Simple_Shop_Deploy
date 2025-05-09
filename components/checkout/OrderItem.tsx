@@ -3,7 +3,7 @@ import Checkbox from "@/components/ui/Checkbox";
 import ProductInfo from "@/components/cart/ProductInfo";
 
 type OrderItemProps = {
-  id: string;
+  id: number;
   name: string;
   imageUrl: string;
   category: string;
@@ -11,7 +11,7 @@ type OrderItemProps = {
   quantity: number;
   note?: string;
   protection: boolean;
-  onToggleProtection: (id: string) => void;
+  onToggleProtection: (id: number) => void;
 };
 
 export default function OrderItem({

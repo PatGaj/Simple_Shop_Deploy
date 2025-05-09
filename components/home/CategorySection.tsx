@@ -3,7 +3,7 @@ import Tile from "./Tile";
 import { useEffect, useState } from "react";
 import TileContainer from "./TileContainer";
 import Link from "next/link";
-import { Category } from "@/app/generated/prisma/client";
+import { Category } from "@prisma/client/";
 
 export default function CategorySection() {
   const [category, setCategory] = useState<Category[]>([]);

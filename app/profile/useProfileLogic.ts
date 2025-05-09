@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Order } from "../generated/prisma/client";
+import { OrderItemDetail } from "@/components/profile/OrderItems";
 
 interface Address {
   id: number;
@@ -11,6 +11,7 @@ interface Address {
   postalCode: string;
 }
 
+
 export interface ProfileData {
   id: number;
   email: string;
@@ -18,7 +19,11 @@ export interface ProfileData {
   phone: string;
   country: string;
   addresses: Address[];
-  orders: Order[];
+  orders: {
+    id: number;
+    createdAt: string; 
+    items: OrderItemDetail[];
+  }[];
 }
 
 export function useProfileLogic() {

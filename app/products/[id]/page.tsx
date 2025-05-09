@@ -22,7 +22,7 @@ export default function ProductId() {
     colors,
   } = useProductLogic();
 
-  if (loading) return <Loading text="Loading Product..."/>;
+  if (loading || product === null) return <Loading text="Loading Product..." />;
 
   return (
     <div className="flex gap-x-8 w-full p-10">

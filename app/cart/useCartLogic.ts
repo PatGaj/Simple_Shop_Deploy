@@ -1,17 +1,15 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { Product } from "../generated/prisma/client";
 
-type LocalCartItem = { id: string; quantity: number; note: string };
-type ProductFromAPI = {
-  id: number;
-  name: string;
-  imageUrl: string;
-  price: number;
-  stock: number;
+type LocalCartItem = { id: string; quantity: number; note: string; price: number };
+
+export type CartProduct = Omit<Product, "id"> & {
+  id: string;
+  quantity: number;
+  note: string;
   category: { name: string };
 };
-
-export type CartProduct = ProductFromAPI & LocalCartItem;
 
 export function useCartLogic() {
   const router = useRouter();
@@ -38,13 +36,13 @@ export function useCartLogic() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(ids),
       });
-      const data: ProductFromAPI[] = await res.json();
-      const combined = data.map((p) => {
+      const data = await res.json();
+      const combined = data.map((p: Product) => {
         const local = localCart.find((c) => c.id === String(p.id))!;
         return { ...p, id: String(p.id), quantity: local.quantity, note: local.note };
       });
       setProducts(combined);
-      setSelectedItems(new Set(combined.map((p) => p.id)));
+      setSelectedItems(new Set(combined.map((p: Product) => p.id)));
       setSelectAll(true);
     })();
   }, []);

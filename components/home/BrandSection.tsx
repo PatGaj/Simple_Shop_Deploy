@@ -2,7 +2,7 @@
 import Tile from "./Tile";
 import { useEffect, useState } from "react";
 import TileContainer from "./TileContainer";
-import { Brand } from "@/app/generated/prisma/client";
+import { Brand } from "@prisma/client";
 
 export default function BrandSection() {
   const [brands, setBrands] = useState<Brand[]>([]);

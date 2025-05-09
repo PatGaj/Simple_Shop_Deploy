@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Category } from "@/app/generated/prisma/client";
+import { Category } from "@prisma/client";
 import CarouselSlide from "./CarouselSlide";
 import CarouselControls from "./CarouselControls";
 import CarouselDots from "./CarouselDots";

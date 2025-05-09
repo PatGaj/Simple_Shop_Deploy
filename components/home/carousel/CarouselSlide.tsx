@@ -1,6 +1,6 @@
 import SvgRightArrow from "@/components/icons/RightArrow";
 import Button from "../../ui/Button";
-import { Category } from "@/app/generated/prisma/client";
+import { Category } from "@prisma/client";
 
 type CarouselSlideProps = {
   category: Category;

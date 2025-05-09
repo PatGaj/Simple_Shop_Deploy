@@ -26,14 +26,12 @@ export default function Cart() {
   return (
     <div className="flex gap-x-12 items-start w-full p-10">
       <div className="flex flex-col w-full gap-y-8">
-        {products.length > 1 && (
-          <Checkbox text="Select All" checked={selectAll} onChange={toggleSelectAll} />
-        )}
+        {products.length > 1 && <Checkbox text="Select All" checked={selectAll} onChange={toggleSelectAll} />}
 
         {products.length === 0 ? (
           <div className="heading4 w-full text-center">Koszyk pusty</div>
         ) : (
-          products.map(p => (
+          products.map((p) => (
             <div key={p.id} className="relative flex gap-x-6">
               <Checkbox checked={selectedItems.has(p.id)} onChange={() => toggleSelectItem(p.id)} />
               <CartProductItem
@@ -44,13 +42,10 @@ export default function Cart() {
                 max={p.stock}
                 value={p.quantity}
                 note={p.note}
-                onChange={v => updateQuantity(p.id, v)}
-                onNoteChange={txt => updateNote(p.id, txt)}
+                onChange={(v) => updateQuantity(p.id, v)}
+                onNoteChange={(txt) => updateNote(p.id, txt)}
               />
-              <button
-                onClick={() => removeItem(p.id)}
-                className="absolute top-4 right-4 cursor-pointer"
-              >
+              <button onClick={() => removeItem(p.id)} className="absolute top-4 right-4 cursor-pointer">
                 <TrashcanIcon className="text-danger-500" />
               </button>
             </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { Product } from "@/app/generated/prisma/client";
+import { Product } from "@prisma/client";
 
 export type ProductWithCategory = Product & { category: { name: string } };
 

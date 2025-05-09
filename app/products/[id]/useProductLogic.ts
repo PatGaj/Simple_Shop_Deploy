@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useAlert } from "@/hooks/useAlert";
 import { useCart } from "@/hooks/useCart";
-import { Product } from "@/app/generated/prisma/client";
+import { Product } from "@prisma/client";
 
 export type ProductWithCategory = Product & { category: { name: string } };
 
@@ -13,7 +13,7 @@ export function useProductLogic() {
   const alert = useAlert();
   const { addToCart } = useCart();
 
-  const [product, setProduct] = useState<ProductWithCategory >();
+  const [product, setProduct] = useState<ProductWithCategory | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedColor, setSelectedColor] = useState<string>("white");
 
@@ -28,7 +28,9 @@ export function useProductLogic() {
       }
     }
     fetchProduct();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [params.id]);
 
   const handleAddToCart = useCallback(() => {
@@ -50,16 +52,18 @@ export function useProductLogic() {
     return `${start} - ${end}`;
   }, []);
 
-  const images = useMemo(() => [
-    product?.imageUrl || "",
-    "https://i.ibb.co/HpGX2w4R/noImage.png",
-    "https://i.ibb.co/HpGX2w4R/noImage.png",
-  ], [product]);
+  const images = useMemo(
+    () => [product?.imageUrl || "", "https://i.ibb.co/HpGX2w4R/noImage.png", "https://i.ibb.co/HpGX2w4R/noImage.png"],
+    [product]
+  );
 
-  const colors = useMemo(() => [
-    { name: "white", className: "bg-white" },
-    { name: "black", className: "bg-black" },
-  ], []);
+  const colors = useMemo(
+    () => [
+      { name: "white", className: "bg-white" },
+      { name: "black", className: "bg-black" },
+    ],
+    []
+  );
 
   const loading = product === null;
 

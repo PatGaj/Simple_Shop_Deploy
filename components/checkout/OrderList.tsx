@@ -2,7 +2,7 @@ import React from "react";
 import OrderItem from "./OrderItem";
 
 type Product = {
-  id: string;
+  id: number;
   name: string;
   imageUrl: string;
   price: number;
@@ -14,7 +14,7 @@ type Product = {
 type OrderListProps = {
   items: Product[];
   protections: Record<string, boolean>;
-  onToggleProtection: (id: string) => void;
+  onToggleProtection: (id: number) => void;
 };
 
 export default function OrderList({ items, protections, onToggleProtection }: OrderListProps) {
