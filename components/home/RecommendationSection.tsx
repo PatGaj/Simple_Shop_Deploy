@@ -1,3 +1,4 @@
+"use client";
 import { Product } from "@prisma/client/";
 import ProductCard from "../products/ProductCard";
 import TileContainer from "./TileContainer";
@@ -8,17 +9,18 @@ type ProductWithCategory = Product & {
   };
 };
 
-export default async function RecommendationSection() {
-  const res = await fetch(`${process.env.NEXTAUTH_URL || ""}/api/products/recomendation`, {
-    cache: "no-store",
-  });
+import { useState, useEffect } from "react";
+export default function RecommendationSection() {
+  const [products, setProducts] = useState<ProductWithCategory[] | null>(null);
 
-  if (!res.ok) {
-    throw new Error("Błąd podczas pobierania rekomendowanych produktów");
-  }
+  useEffect(() => {
+    fetch("/api/products/recomendation")
+      .then((r) => r.json())
+      .then(setProducts)
+      .catch(console.error);
+  }, []);
 
-  const products: ProductWithCategory[] = await res.json();
-
+  if (!products) return <div>Ładowanie…</div>;
   return (
     <TileContainer title="Recommendation" overflow>
       {products.map((product) => (
