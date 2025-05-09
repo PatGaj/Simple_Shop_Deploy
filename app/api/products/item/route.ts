@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
 
   try {
     const product = await prisma.product.findUnique({
@@ -16,21 +17,17 @@ export async function GET(request: Request, { params }: { params: { id: string }
         discount: true,
         stock: true,
         imageUrl: true,
-        category: {
-          select: {
-            name: true,
-          },
-        },
+        category: { select: { name: true } },
       },
     });
 
     if (!product) {
-      return new NextResponse("Product not found", { status: 404 });
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     return NextResponse.json(product);
-  } catch (error) {
-    console.error("Błąd:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
