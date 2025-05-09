@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Product } from "../generated/prisma/client";
+import { Product } from "@prisma/client";
 
 type LocalCartItem = { id: string; quantity: number; note: string; price: number };
 
