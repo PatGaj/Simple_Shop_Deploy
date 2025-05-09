@@ -1,21 +1,15 @@
-
-import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "GET") {
-    res.setHeader("Allow", ["GET"]);
-    return res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
-
-  const { id } = req.query;
-  if (Array.isArray(id) || isNaN(Number(id))) {
-    return res.status(400).send("Invalid product ID");
+export async function GET(req: NextRequest, res: NextResponse, { params }: { params: { id: string } }) {
+  const id = parseInt(params.id, 10);
+  if (isNaN(id)) {
+    return NextResponse.json({ error: "Invalid product ID" }, { status: 400 });
   }
 
   try {
     const product = await prisma.product.findUnique({
-      where: { id: Number(id) },
+      where: { id },
       select: {
         id: true,
         name: true,
@@ -25,21 +19,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         discount: true,
         stock: true,
         imageUrl: true,
-        category: {
-          select: {
-            name: true,
-          },
-        },
+        category: { select: { name: true } },
       },
     });
 
     if (!product) {
-      return res.status(404).send("Product not found");
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    return res.status(200).json(product);
-  } catch (error) {
-    console.error("Error fetching product:", error);
-    return res.status(500).send("Internal Server Error");
+    return NextResponse.json(product);
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
