@@ -21,7 +21,7 @@ export function useProductLogic() {
     if (!params.id) return;
     let cancelled = false;
     async function fetchProduct() {
-      const res = await fetch(`/api/products/${params.id}`);
+      const res = await fetch(`/api/products/item?id=${params.id}`);
       const data: ProductWithCategory = await res.json();
       if (!cancelled) {
         setProduct(data);
