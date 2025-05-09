@@ -1,16 +1,19 @@
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<NextResponse> {
-  const { id } = await params;
-  const productId = Number(id);
+export async function GET() {
+  
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const id = Number(session.user.id);
 
   try {
     const product = await prisma.product.findUnique({
-      where: { id: productId },
+      where: { id },
       select: {
         id: true,
         name: true,
@@ -20,7 +23,9 @@ export async function GET(
         discount: true,
         stock: true,
         imageUrl: true,
-        category: { select: { name: true } },
+        category: {
+          select: { name: true },
+        },
       },
     });
 
