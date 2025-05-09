@@ -67,7 +67,7 @@ export function useSuccessLogic() {
 
       const anyWithAddress = localItems.find(li => li.address && li.makeMain);
       if (anyWithAddress) {
-        await fetch("/api/user/address", {
+        await fetch(`${process.env.NEXTAUTH_URL || ''}/api/user/address`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -78,7 +78,7 @@ export function useSuccessLogic() {
       }
 
       const ids = localItems.map(li => parseInt(li.id, 10)).filter(n => !isNaN(n));
-      const prodRes = await fetch("/api/cart", {
+      const prodRes = await fetch(`${process.env.NEXTAUTH_URL || ''}/api/cart`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(ids),
@@ -116,7 +116,7 @@ export function useSuccessLogic() {
         grandTotal,
       });
 
-      const orderRes = await fetch("/api/success", {
+      const orderRes = await fetch(`${process.env.NEXTAUTH_URL || ''}/api/success`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

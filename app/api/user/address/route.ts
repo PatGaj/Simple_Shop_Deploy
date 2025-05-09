@@ -19,7 +19,7 @@ export async function GET() {
     });
     return NextResponse.json({ address });
   } catch (err) {
-    console.error("GET /api/address error:", err);
+    console.error( err);
     return NextResponse.json(
       { error: "Cannot fetch address" },
       { status: 500 }
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       { status: existing ? 200 : 201 }
     );
   } catch (err) {
-    console.error("POST /api/address error:", err);
+    console.error(err);
     return NextResponse.json(
       { error: "Cannot save address" },
       { status: 500 }

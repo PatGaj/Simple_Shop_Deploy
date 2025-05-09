@@ -17,7 +17,7 @@ function CategoryDropdown({ limit = 3, onChange, initial = "All" }: CategoryDrop
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("/api/category?fields=name");
+        const res = await fetch(`${process.env.NEXTAUTH_URL || ""}/api/category?fields=name`);
         const data = await res.json();
 
         const names = data.map((item: { name: string }) => item.name);

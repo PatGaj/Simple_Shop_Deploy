@@ -10,7 +10,7 @@ export default function CategorySection() {
 
   useEffect(() => {
     const fetchBrands = async () => {
-      const res = await fetch("/api/category?fields=name,iconUrl");
+      const res = await fetch(`${process.env.NEXTAUTH_URL || ''}/api/category?fields=name,iconUrl`);
       const data = await res.json();
       setCategory(data);
     };

@@ -28,7 +28,7 @@ export default function AddressSection({ onAddressChange, onMakeMainChange }: Ad
     postalCode: string;
   }>({ country: "", province: "", city: "", postalCode: "" });
   useEffect(() => {
-    fetch("/api/user/address")
+    fetch(`${process.env.NEXTAUTH_URL || ''}/api/user/address`)
       .then((res) => res.json())
       .then(({ address }) => {
         if (address) {
