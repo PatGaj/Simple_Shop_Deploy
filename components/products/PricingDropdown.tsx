@@ -1,34 +1,34 @@
 import { useState, useEffect } from "react";
 import InputField from "../ui/InputField";
 import { DropDownIcon } from "../icons";
-import DropdownComponents from "../ui/DropdownComponents";
+import DropdownComponents from "../ui/DropdownComponents/DropdownComponents";
 
 function PricingDropdown({ onChange }: { onChange?: (data: { minPrice: string; maxPrice: string }) => void }) {
-  const [max, setMax] = useState<string>("");
-  const [min, setMin] = useState<string>("");
+  const [max, setMax] = useState("");
+  const [min, setMin] = useState("");
 
   useEffect(() => {
-    if (onChange) {
-      onChange({ minPrice: min, maxPrice: max });
-    }
-  }, [min, max]);
+    onChange?.({ minPrice: min, maxPrice: max });
+  }, [min, max, onChange]);
 
   return (
-    <DropdownComponents withTitle title="price">
+    <DropdownComponents withTitle title="Price" defaultOpen>
       <InputField
-        type="leftButton"
+        variant="leftButton"
         placeholder="$ Min Price"
-        onDebouncedChange={(data) => setMin(data)}
         textButton="USD"
+        value={min}
+        onChange={(e) => setMin(e.target.value)}
         withRightIcon
         rightIcon={<DropDownIcon />}
         className="w-full"
       />
       <InputField
-        type="leftButton"
+        variant="leftButton"
         placeholder="$ Max Price"
-        onDebouncedChange={(data) => setMax(data)}
         textButton="USD"
+        value={max}
+        onChange={(e) => setMax(e.target.value)}
         withRightIcon
         rightIcon={<DropDownIcon />}
         className="w-full"

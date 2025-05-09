@@ -1,12 +1,8 @@
+import { Product } from "@/app/generated/prisma/client";
 import ProductCard from "../products/ProductCard";
 import TileContainer from "./TileContainer";
 
-type Product = {
-  id: number;
-  name: string;
-  imageUrl: string;
-  price: number;
-  discount: number | undefined;
+type ProductWithCategory = Product & {
   category: {
     name: string;
   };
@@ -21,7 +17,7 @@ export default async function RecommendationSection() {
     throw new Error("Błąd podczas pobierania rekomendowanych produktów");
   }
 
-  const products: Product[] = await res.json();
+  const products: ProductWithCategory[] = await res.json();
 
   return (
     <TileContainer title="Recommendation" overflow>
@@ -33,7 +29,6 @@ export default async function RecommendationSection() {
           category={product.category.name}
           itemName={product.name}
           price={product.price}
-          withDiscount={!!product.discount}
           discount={product.discount}
         />
       ))}

@@ -1,47 +1,42 @@
 "use client";
+
 import Link from "next/link";
 import { CartIcon } from "../icons";
 import Badge from "../ui/Badge";
+import { useAlert } from "@/hooks/useAlert";
+import { useCart } from "@/hooks/useCart";
 
-function ProductCard({
-  id,
-  imageURL,
-  category,
-  itemName,
-  price,
-  withDiscount,
-  discount,
-}: {
+type ProductCardProps = {
   id: number;
   imageURL: string;
   category: string;
   itemName: string;
   price: number;
-  withDiscount?: boolean;
-  discount?: number;
-}) {
-  const addToCart = (e: React.MouseEvent) => {
+  discount: number;
+  stock?: number;
+};
+
+export default function ProductCard({
+  id,
+  imageURL,
+  category,
+  itemName,
+  price,
+  discount,
+  stock = 0,
+}: ProductCardProps) {
+  const info = useAlert();
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const product = {
-      id,
-      quantity: 1,
-    };
-
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-    const existingIndex = cart.findIndex((item: any) => item.id === product.id);
-
-    if (existingIndex !== -1) {
-      cart[existingIndex].quantity += 1;
-    } else {
-      cart.push(product);
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-
+    addToCart(id.toString(), 1, stock, true);
+    info({ type: "success", message: `${itemName} added to your shopping cart` });
   };
+
+  const finalPrice = discount !== 0 ? price - discount : price;
 
   return (
     <Link href={`/products/${id}`}>
@@ -49,7 +44,7 @@ function ProductCard({
         <div className="flex justify-center items-center relative rounded-md bg-base-white-2 w-full">
           <img src={imageURL} alt={itemName} className="h-[200px]" />
           <button
-            onClick={addToCart}
+            onClick={handleAddToCart}
             className="w-8 h-8 p-1 rounded-md bg-[var(--color-tile)] absolute top-4 left-4 flex items-center justify-center cursor-pointer"
           >
             <CartIcon className="text-[var(--textColor-primary)]" />
@@ -60,8 +55,8 @@ function ProductCard({
           <div className="flex flex-col gap-y-2">
             <span className="textL">{itemName}</span>
             <div className="flex gap-x-2.5 items-center">
-              <span className="heading5 font-semibold">${withDiscount ? discount : price}</span>
-              {withDiscount && <span className="textL line-through">${price}</span>}
+              <span className="heading5 font-semibold">${finalPrice.toFixed(2)}</span>
+              {discount !== 0 && <span className="textL line-through">${price.toFixed(2)}</span>}
             </div>
           </div>
         </div>
@@ -69,4 +64,3 @@ function ProductCard({
     </Link>
   );
 }
-export default ProductCard;

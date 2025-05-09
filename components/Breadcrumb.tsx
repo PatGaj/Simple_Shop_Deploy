@@ -3,38 +3,38 @@
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { DropDownIcon } from "./icons";
-import Link from "next/link";
 
-function Breadcrumb() {
+export default function Breadcrumb() {
   const pathname = usePathname();
   const pages = pathname.split("/").filter(Boolean);
 
   return (
     <div className="flex gap-x-2 w-full max-w-[1440px] px-10 items-center">
-      {pages.length != 0 && (
+      {pages.length > 0 && (
         <>
-          <Link href={"/"} className="text-[var(--textColor-tertiary)]">
-            Home
-          </Link>
+          <span className="text-[var(--textColor-tertiary)] textM font-medium capitalize">Home</span>
           <DropDownIcon className="-rotate-90 text-xs text-[var(--textColor-tertiary)]" />
         </>
       )}
 
-      {pages.length != 0 &&
-        pages.map((element, index) => (
+      {pages.map((element, index) => {
+        const isLast = index === pages.length - 1;
+        const label = decodeURIComponent(element);
+
+        return (
           <span
-            key={index}
+            key={`${element}-${index}`}
             className={clsx(
-              index === pages.length - 1 ? "text-[var(--textColor-primary)]" : "text-[var(--textColor-tertiary)]",
+              isLast ? "text-[var(--textColor-primary)]" : "text-[var(--textColor-tertiary)]",
               "flex gap-x-2 items-center capitalize textM font-medium"
             )}
+            {...(isLast && { "aria-current": "page" })}
           >
-            {element}
-            {index !== pages.length - 1 && <DropDownIcon className="-rotate-90 text-xs" />}
+            {label}
+            {!isLast && <DropDownIcon className="-rotate-90 text-xs text-[var(--textColor-tertiary)]" />}
           </span>
-        ))}
+        );
+      })}
     </div>
   );
 }
-
-export default Breadcrumb;

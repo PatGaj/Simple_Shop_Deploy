@@ -11,6 +11,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         id: true,
         name: true,
         description: true,
+        exploreInfo: true,
         price: true,
         discount: true,
         stock: true,

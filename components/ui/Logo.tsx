@@ -1,14 +1,20 @@
 import clsx from "clsx";
 
-function Logo({ size }: { size: "primary" | "secondary" }) {
+type LogoProps = {
+  size: "primary" | "secondary";
+};
+
+export default function Logo({ size }: LogoProps) {
   const sizeLogo = {
-    primary: "heading4",
-    secondary: "heading3",
+    primary: "heading3",
+    secondary: "heading5",
   };
   return (
     <span className={clsx(sizeLogo[size], "font-semibold")}>
-      <span className="text-[var(--color-primary)]">Nexus</span>Hub
+      <span className="text-[var(--color-primary)]">
+        Pat<span className="text-[var(--color-secondary)]">Gaj</span>
+      </span>
+      Hub
     </span>
   );
 }
-export default Logo;

@@ -1,16 +1,13 @@
 import clsx from "clsx";
 
-function Badge({
-  type = "default",
-  size = "l",
-  className,
-  text,
-}: {
-  type?: "default" | "success"|"failed"|"pending";
+type BadgeProps = {
+  type?: "default" | "success" | "failed" | "pending";
   size?: "l" | "m" | "s";
   className?: string;
   text: string;
-}) {
+};
+
+function Badge({ type = "default", size = "l", className, text }: BadgeProps) {
   const sizeBadge = {
     l: "py-1.5 textS font-medium",
     m: "py-0.5 textXS font-medium",

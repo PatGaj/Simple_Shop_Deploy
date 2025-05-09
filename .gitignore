@@ -19,7 +19,6 @@
 
 # production
 /build
-/app/generated/
 
 # misc
 .DS_Store

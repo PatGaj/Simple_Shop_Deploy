@@ -1,22 +1,26 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+import { hashPassword } from "@/lib/encryption"
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-const schema = z.object({
-  email: z.string().email(),
-  phone: z.string().min(6),
-  password: z.string()
-    .min(8)
-    .regex(/[A-Z]/, "At least one uppercase letter")
-    .regex(/[a-z]/, "At least one lowercase letter")
-    .regex(/[0-9]/, "At least one number"),
-  confirmPassword: z.string(),
-  country: z.string().nonempty(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const schema = z
+  .object({
+    email: z.string().email(),
+    phone: z.string().min(9),
+    password: z
+      .string()
+      .min(8)
+      .regex(/[A-Z]/, "At least one uppercase letter")
+      .regex(/[a-z]/, "At least one lowercase letter")
+      .regex(/[0-9]/, "At least one number"),
+    confirmPassword: z.string(),
+    country: z.string().nonempty(),
+    firstName: z.string().min(1, "First name is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 export async function POST(req: Request) {
   try {
@@ -24,29 +28,27 @@ export async function POST(req: Request) {
 
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { errors: parsed.error.format() },
-        { status: 400 }
-      );
+      return NextResponse.json({ errors: parsed.error.format() }, { status: 400 });
     }
 
-    const { email, password, phone, country } = parsed.data;
+    const { email, password, phone, country, firstName } = parsed.data;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json(
-        { message: "User already exists" },
+        { errors: { email: { _errors: ["User with this email already exists"] } } },
         { status: 400 }
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
 
     const user = await prisma.user.create({
       data: {
         email,
         phone,
         country,
+        firstName,
         password: hashedPassword,
       },
     });

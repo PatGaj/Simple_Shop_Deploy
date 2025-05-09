@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { CrossIcon, MinusIcon } from "../icons";
+import React, { useState, useEffect, useCallback } from "react";
+import { CrossIcon, MinusIcon } from "@/components/icons";
 
 type CounterProps = {
   max: number;
@@ -7,34 +7,34 @@ type CounterProps = {
   value?: number;
 };
 
-function Counter({ max, onChange, value = 1 }: CounterProps) {
+export default function Counter({ max, onChange, value = 1 }: CounterProps) {
   const [quantity, setQuantity] = useState(value);
 
   useEffect(() => {
-    if (onChange) {
-      onChange(quantity);
-    }
-  }, [quantity, onChange]);
+    setQuantity(value);
+  }, [value]);
 
-  const increment = () => {
+  useEffect(() => {
+    onChange?.(quantity);
+  }, [quantity]);
+
+  const increment = useCallback(() => {
     setQuantity((prev) => (prev < max ? prev + 1 : prev));
-  };
+  }, [max]);
 
-  const decrement = () => {
+  const decrement = useCallback(() => {
     setQuantity((prev) => Math.max(1, prev - 1));
-  };
+  }, []);
 
   return (
-    <div className="flex items-center gap-x-3.5 border border-textColor-primary rounded-md w-max h-max py-3.5 px-6">
-      <button className="cursor-pointer" onClick={decrement}>
+    <div className="flex items-center gap-x-3.5 border border-textColor-primary rounded-md py-3.5 px-6">
+      <button onClick={decrement}>
         <MinusIcon />
       </button>
       <span className="w-6 text-center">{quantity}</span>
-      <button className="cursor-pointer" onClick={increment}>
+      <button onClick={increment}>
         <CrossIcon />
       </button>
     </div>
   );
 }
-
-export default Counter;

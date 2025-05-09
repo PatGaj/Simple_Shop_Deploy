@@ -13,10 +13,13 @@ export async function GET(request: Request) {
     const minPriceParam = searchParams.get("minPrice");
 
     const skipItems = (pageParam - 1) * limitParam;
-    const sortedByPrice = sortedParam === "Highest price" ? "desc" : "asc";
+    const sortedByPrice = sortedParam === "highest_price" ? "desc" : "asc";
 
-    const filters: { category?: { name: string }; brand?: { name: string }; price?: { gte?: number; lte?: number } } =
-      {};
+    const filters: {
+      category?: { name: string };
+      brand?: { name: string };
+      price?: { gte?: number; lte?: number };
+    } = {};
     if (categoryParam) {
       filters.category = {
         name: categoryParam,
@@ -27,16 +30,16 @@ export async function GET(request: Request) {
         name: brandParam,
       };
     }
-    if (minPriceParam) {
-      filters.price = {
-        gte: parseInt(minPriceParam),
-      };
+    if (minPriceParam || maxPriceParam) {
+      filters.price = {};
+      if (minPriceParam) {
+        filters.price.gte = parseInt(minPriceParam);
+      }
+      if (maxPriceParam) {
+        filters.price.lte = parseInt(maxPriceParam);
+      }
     }
-    if (maxPriceParam) {
-      filters.price = {
-        lte: parseInt(maxPriceParam),
-      };
-    }
+
     const totalCount = await prisma.product.count({
       where: filters,
     });
@@ -57,7 +60,7 @@ export async function GET(request: Request) {
           },
         },
       },
-      orderBy: sortedParam === "Latest" ? { createdAt: "asc" } : { price: sortedByPrice },
+      orderBy: sortedParam === "latest" ? { createdAt: "asc" } : { price: sortedByPrice },
       skip: skipItems,
       take: limitParam,
     });

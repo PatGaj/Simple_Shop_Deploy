@@ -2,17 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Checkbox from "../ui/Checkbox";
-import DropdownComponents from "../ui/DropdownComponents";
+import DropdownComponents from "../ui/DropdownComponents/DropdownComponents";
 
-function CategoryDropdown({
-  limit = 3,
-  onChange,
-  initial = 'All',
-}: {
+type CategoryDropdownProps = {
   limit?: number;
   onChange?: (data: string) => void;
   initial?: string;
-}) {
+};
+
+function CategoryDropdown({ limit = 3, onChange, initial = "All" }: CategoryDropdownProps) {
   const [selected, setSelected] = useState<string>(initial);
   const [options, setOptions] = useState<string[]>(["All"]);
 
@@ -41,8 +39,7 @@ function CategoryDropdown({
       {options.map((option) => (
         <Checkbox
           key={option}
-          size="m"
-          withText
+          sizeCheckbox="m"
           text={option}
           checked={selected === option}
           onChange={() => setSelected(option)}

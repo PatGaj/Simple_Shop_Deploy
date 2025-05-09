@@ -4,7 +4,6 @@ import { CheckIcon } from "../icons";
 
 type CheckboxProps = {
   sizeCheckbox?: "l" | "m" | "s";
-  withText?: boolean;
   text?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
@@ -14,7 +13,7 @@ const sizing = {
 };
 
 const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ sizeCheckbox = "l", withText, text, className, ...props }, ref) => {
+  ({ sizeCheckbox = "l", text, className, ...props }, ref) => {
     return (
       <label className={clsx("flex items-center", sizing.text[sizeCheckbox], className)}>
         <div className={clsx("relative", sizing.checkbox[sizeCheckbox])}>
@@ -24,10 +23,10 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
             className="peer absolute w-full h-full z-10 opacity-0 cursor-pointer"
             {...props}
           />
-          <div className="pointer-events-none absolute inset-0 border bg-[var(--color-tile)] border-[var(--color-border-primary)] peer-checked:bg-amber-500 peer-checked:border-amber-500 rounded-md" />
+          <div className="pointer-events-none absolute inset-0 border bg-[var(--color-tile)] border-[var(--color-border-primary)] peer-checked:bg-[var(--color-secondary)] peer-checked:border-[var(--color-secondary)] rounded-md" />
           <CheckIcon className="absolute inset-0 m-auto text-[var(--background)] peer-not-checked:hidden" />
         </div>
-        {withText && <span>{text}</span>}
+        {text && <span>{text}</span>}
       </label>
     );
   }

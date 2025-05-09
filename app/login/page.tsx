@@ -1,64 +1,116 @@
+"use client";
+
+import React from "react";
 import Button from "@/components/ui/Button";
-import { HiddenIcon } from "@/components/icons";
 import InputField from "@/components/ui/InputField";
+import Checkbox from "@/components/ui/Checkbox";
 import Logo from "@/components/ui/Logo";
 import Link from "next/link";
-import Checkbox from "@/components/ui/Checkbox";
+import { HiddenIcon, LeftArrowIcon, VisibleIcon } from "@/components/icons";
+import { useSignInLogic } from "./useSignInLogic";
 
-function signInForm() {
-  const success = false;
+export default function SignInForm() {
+  const {
+    step,
+    email,
+    password,
+    error,
+    showPassword,
+    isEmailValid,
+    canSubmitPassword,
+    handleEmailContinue,
+    handleBackToEmail,
+    handleEmailChange,
+    handlePasswordChange,
+    toggleShowPassword,
+    handleSubmit,
+  } = useSignInLogic();
+
   return (
-    <div className="flex flex-col justify-center items-center gap-y-8">
+    <div className="flex flex-col items-center gap-8">
       <Logo size="secondary" />
-      <div className="flex flex-col gap-y-8 border border-[var(--color-border-secondary)] bg-[var(--color-tile)] p-6 rounded-md w-[448px]">
-        <div className="flex flex-col gap-y-5">
-          <span className="heading6 font-medium">Sign in</span>
-          <hr className="text-[var(--color-border-secondary)]" />
+      <div className="w-[448px] p-6 bg-[var(--color-tile)] border border-[var(--color-border-secondary)] rounded-md">
+        <div className="flex justify-between items-center">
+          <h2 className="heading6">Sign in</h2>
+          {step === "password" && (
+            <Button
+              withLeftIcon
+              onClick={handleBackToEmail}
+              leftIcon={<LeftArrowIcon className="text-xs" />}
+            >
+              Back to email
+            </Button>
+          )}
         </div>
 
-        {success ? (
-          <div className="flex flex-col gap-y-8">
-            <div className="flex flex-col gap-y-6">
+        <hr className="text-[var(--color-border-secondary)] my-5" />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          {step === "email" ? (
+            <>
               <InputField
-                placeholder="Password"
+                withLabel
+                label="Email"
+                type="email"
+                placeholder="Your email"
+                value={email}
+                onChange={e => handleEmailChange(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleEmailContinue();
+                  }
+                }}
+              />
+              {error && step === "email" && <p className="text-danger-500 text-sm">{error}</p>}
+              <Button
+                buttonStyle="fill"
+                type="button"
+                onClick={handleEmailContinue}
+                disabled={!isEmailValid}
+              >
+                Continue
+              </Button>
+            </>
+          ) : (
+            <>
+              <InputField
                 withLabel
                 label="Password"
-                typeInput="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Your password"
+                value={password}
+                onChange={e => handlePasswordChange(e.target.value)}
                 withRightIcon
-                rightIcon={<HiddenIcon className="text-2xl" />}
+                rightIcon={
+                  <button type="button" onClick={toggleShowPassword} className="cursor-pointer">
+                    {showPassword ? <VisibleIcon className="text-2xl" /> : <HiddenIcon className="text-2xl" />}
+                  </button>
+                }
               />
-              <div className="flex justify-between">
-                <Checkbox size="l" withText text="Save password" />
-                <Link className="textM font-medium" href={"#"}>
+              <div className="flex justify-between items-center">
+                <Checkbox sizeCheckbox="l" text="Save password" />
+                <Link href="#" className="textM font-medium">
                   Forgot your password?
                 </Link>
               </div>
-            </div>
-            <Button style="fill">Sign in</Button>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-y-8">
-            <div>
-              <InputField
-                withLabel
-                label="Email or mobile phone number"
-                placeholder="Email or Mobile phone Number"
-                typeInput="text"
-              />
-            </div>
-            <div className="flex flex-col w-full gap-y-6">
-              <Button style="fill">Continue</Button>
-              <span className="textM">
-                Don’t have an account?{" "}
-                <Link className="font-semibold" href={"/register"}>
-                  Register
-                </Link>
-              </span>
-            </div>
-          </div>
-        )}
+              {error && <p className="text-red-500">{error}</p>}
+              <Button
+                buttonStyle="fill"
+                type="submit"
+                disabled={!canSubmitPassword}
+              >
+                Sign in
+              </Button>
+            </>
+          )}
+          <p className="text-center textM">
+            Don’t have an account?{' '}
+            <Link href="/register" className="font-semibold">
+              Register
+            </Link>
+          </p>
+        </form>
       </div>
     </div>
   );
 }
-export default signInForm;

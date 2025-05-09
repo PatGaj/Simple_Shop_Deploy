@@ -4,7 +4,7 @@ import clsx from "clsx";
 
 type InputFieldProps = {
   sizeInput?: "xxl" | "xl" | "l" | "m" | "s" | "xs";
-  typeInput?: "stroke" | "leftButton";
+  variant?: "stroke" | "leftButton";
   destructive?: boolean;
   withLabel?: boolean;
   label?: string;
@@ -23,7 +23,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
   (
     {
       sizeInput = "l",
-      typeInput = "stroke",
+      variant = "stroke",
       destructive,
       withLabel,
       label,
@@ -80,8 +80,8 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
           >
             <div
               className={clsx(
-                "flex items-center gap-x-4 px-4.5 border w-full h-max rounded-l-md bg-[var(--color-tile)]",
-                typeInput === "stroke" && "rounded-r-md",
+                "flex items-center gap-x-4 px-[18px] border w-full h-max rounded-l-md bg-[var(--color-tile)]",
+                variant === "stroke" && "rounded-r-md",
                 sizing.input[sizeInput],
                 destructive
                   ? "border-danger-300 group-focus-within:border-danger-300"
@@ -89,16 +89,16 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
                 className
               )}
             >
-              {typeInput === "stroke" && withLeftIcon && leftIcon}
+              {variant === "stroke" && withLeftIcon && leftIcon}
               <input ref={ref} className="w-full focus:outline-none bg-transparent" {...inputProps} />
-              {typeInput === "stroke" && withRightIcon && rightIcon}
+              {variant === "stroke" && withRightIcon && rightIcon}
             </div>
 
-            {typeInput === "leftButton" && (
+            {variant === "leftButton" && (
               <button
                 type="button"
                 className={clsx(
-                  "flex items-center gap-x-4 px-4.5 border border-l-0 rounded-r-md bg-[var(--color-tile)]",
+                  "flex items-center gap-x-4 px-[18px] border border-l-0 rounded-r-md bg-[var(--color-tile)]",
                   sizing.input[sizeInput],
                   destructive
                     ? "border-danger-300 group-focus-within:border-danger-300"

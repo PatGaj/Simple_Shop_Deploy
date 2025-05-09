@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import Button from "../ui/Button";
 import { LeftArrowIcon, RightArrowIcon } from "../icons";
-import Pagination from "./Pagination";
+import Pagination from "./Pagination/Pagination";
 
-function PaginationSection({ totalPages, onChange }: { totalPages: number; onChange?: (page: number) => void }) {
+function PaginationSection({ totalPages, onChange }: { totalPages: number; onChange: (page: number) => void }) {
   const [page, setPage] = useState(1);
 
  
@@ -19,18 +19,20 @@ function PaginationSection({ totalPages, onChange }: { totalPages: number; onCha
       <div className="flex gap-x-6">
         <Button
           withLeftIcon
+          disabled={page === 1}
           leftIcon={<LeftArrowIcon />}
-          style="stroke"
-          size="s"
+          buttonStyle="stroke"
+          buttonSize="s"
           onClick={() => setPage((page) => (page > 1 ? page - 1 : page))}
         >
           Previous
         </Button>
         <Button
           withRightIcon
+          disabled={page === totalPages}
           rightIcon={<RightArrowIcon />}
-          size="s"
-          style="stroke"
+          buttonSize="s"
+          buttonStyle="stroke"
           onClick={() => setPage((page) => (page === totalPages ? page : page + 1))}
         >
           Next
