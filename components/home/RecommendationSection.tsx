@@ -9,7 +9,7 @@ type ProductWithCategory = Product & {
 };
 
 export default async function RecommendationSection() {
-  const res = await fetch("http://localhost:3000/api/products/recomendation", {
+  const res = await fetch(`${process.env.NEXTAUTH_URL || ""}/api/products/recomendation`, {
     cache: "no-store",
   });
 
