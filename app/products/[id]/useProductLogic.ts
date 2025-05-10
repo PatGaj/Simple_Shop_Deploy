@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useAlert } from "@/hooks/useAlert";
 import { useCart } from "@/hooks/useCart";
 import { Product } from "@prisma/client";
+import { useFetchWithRetry } from "@/hooks/useFetchWithRetry";
 
 export type ProductWithCategory = Product & { category: { name: string } };
 
@@ -12,26 +13,47 @@ export function useProductLogic() {
   const params = useParams();
   const alert = useAlert();
   const { addToCart } = useCart();
+  const fetchWithRetry = useFetchWithRetry();
 
   const [product, setProduct] = useState<ProductWithCategory | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedColor, setSelectedColor] = useState<string>("white");
 
   useEffect(() => {
     if (!params.id) return;
     let cancelled = false;
+    setLoading(true);
+    setError(null);
+
     async function fetchProduct() {
-      const res = await fetch(`/api/products/${params.id}`);
-      const data: ProductWithCategory = await res.json();
-      if (!cancelled) {
-        setProduct(data);
+      try {
+        const baseUrl = process.env.NEXTAUTH_URL || "";
+        const res = await fetchWithRetry(`${baseUrl}/api/products/${params.id}`);
+        const data: ProductWithCategory = await res.json();
+        if (!cancelled) {
+          setProduct(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error("Błąd przy pobieraniu produktu:", err);
+          setError("Nie udało się pobrać produktu");
+          alert({ type: "danger", message: "Błąd przy ładowaniu produktu" });
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
+
     fetchProduct();
     return () => {
       cancelled = true;
     };
-  }, [params.id]);
+  }, [params.id, alert, fetchWithRetry]);
 
   const handleAddToCart = useCallback(() => {
     if (!product) return;
@@ -65,11 +87,10 @@ export function useProductLogic() {
     []
   );
 
-  const loading = product === null;
-
   return {
     product,
     loading,
+    error,
     quantity,
     setQuantity,
     selectedColor,

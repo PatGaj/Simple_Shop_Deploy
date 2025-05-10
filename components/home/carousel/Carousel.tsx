@@ -7,8 +7,10 @@ import CarouselSlide from "./CarouselSlide";
 import CarouselControls from "./CarouselControls";
 import CarouselDots from "./CarouselDots";
 import Loading from "@/components/Loading";
+import { useFetchWithRetry } from "@/hooks/useFetchWithRetry";
 
 export default function Carousel() {
+  const fetchWithRetry = useFetchWithRetry();
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -17,68 +19,42 @@ export default function Carousel() {
 
   useEffect(() => {
     async function fetchCategories() {
+      const baseUrl = process.env.NEXTAUTH_URL || "";
+      const url = `${baseUrl}/api/category?fields=name,imageUrl,description`;
+
       try {
-        const res = await fetch(
-          `${process.env.NEXTAUTH_URL || ""}/api/category?fields=name,imageUrl,description`
-        );
-        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const res = await fetchWithRetry(url);
         const data: Category[] = await res.json();
         setCategories(data);
       } catch (err) {
-        console.error( err);
+        console.error("Błąd przy pobieraniu kategorii:", err);
         setError("Nie udało się pobrać kategorii");
       } finally {
         setLoading(false);
       }
     }
-
     fetchCategories();
-  }, []);
+  }, [fetchWithRetry]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center p-8">
-        <Loading text="Ładowanie kategorii…" />
-      </div>
-    );
-  }
+  if (loading) return <Loading text="Ładowanie kategorii…" />;
+  if (error)   return <div className="flex justify-center p-8 text-red-500">{error}</div>;
+  if (!categories.length) return null;
 
-  if (error) {
-    return (
-      <div className="flex justify-center p-8 text-red-500">
-        {error}
-      </div>
-    );
-  }
-
-  if (categories.length === 0) {
-    return null;
-  }
-
-  const handlePrev = () => {
-    setActiveIndex((prev) =>
-      prev === 0 ? categories.length - 1 : prev - 1
-    );
-  };
-
-  const handleNext = () => {
-    setActiveIndex((prev) =>
-      prev === categories.length - 1 ? 0 : prev + 1
-    );
-  };
-
-  const handleButtonClick = (name: string) => {
+  const handlePrev = () =>
+    setActiveIndex(i => (i === 0 ? categories.length - 1 : i - 1));
+  const handleNext = () =>
+    setActiveIndex(i => (i === categories.length - 1 ? 0 : i + 1));
+  const handleClick = (name: string) =>
     router.push(`/products?category=${encodeURIComponent(name)}`);
-  };
 
-  const current = categories[activeIndex]!;
+  const current = categories[activeIndex];
 
   return (
     <div className="flex flex-col gap-y-6 items-center">
       <div className="w-full h-[452px] bg-[var(--color-tile)] border border-[var(--color-border-primary)] rounded-md relative overflow-hidden">
         <CarouselSlide
           category={current}
-          onButtonClick={() => handleButtonClick(current.name)}
+          onButtonClick={() => handleClick(current.name)}
         />
         <CarouselControls onPrev={handlePrev} onNext={handleNext} />
       </div>

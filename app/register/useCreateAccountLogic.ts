@@ -1,10 +1,9 @@
-"use client";
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAlert } from "@/hooks/useAlert";
+import { useFetchWithRetry } from "@/hooks/useFetchWithRetry";
 
 const schema = z
   .object({
@@ -34,6 +33,7 @@ export function useCreateAccountLogic() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const alert = useAlert();
+  const fetchWithRetry = useFetchWithRetry();
 
   const form = useForm<FormData>({ resolver: zodResolver(schema) });
   const {
@@ -46,32 +46,25 @@ export function useCreateAccountLogic() {
     formState: { errors, isSubmitting },
   } = form;
 
-  const onSubmit = async (data: FormData) => {
-    const { ...sanitized } = data;
+  const onSubmit = handleSubmit(async (data) => {
+    const baseUrl = process.env.NEXTAUTH_URL || "";
+    const url = `${baseUrl}/api/register`;
+    const sanitized = { ...data };
+
     try {
-      const res = await fetch(`${process.env.NEXTAUTH_URL || ''}/api/register`, {
+      await fetchWithRetry(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sanitized),
       });
-      if (res.ok) {
-        setSuccess(true);
-        reset();
-        alert({ type: "success", message: "Account created successfully!" });
-      } else {
-        const error = await res.json();
-        alert({
-          type: "danger",
-          message: error.errors?.email?._errors?.[0] || error.message || "Registration failed",
-        });
-      }
-    } catch (e) {
-      console.error(e);
+      setSuccess(true);
+      reset();
+      alert({ type: "success", message: "Account created successfully!" });
+    } catch (err) {
+      console.error("Registration error:", err);
       alert({ type: "danger", message: "Registration failed" });
     }
-  };
-
-  const submitHandler = handleSubmit(onSubmit);
+  });
 
   const handleCountryChange = (val: string) => {
     setValue("country", val);
@@ -92,7 +85,7 @@ export function useCreateAccountLogic() {
     showConfirmPassword,
     toggleShowConfirmPassword,
     register,
-    submitHandler,
+    onSubmit,
     errors,
     isSubmitting,
     watch,
