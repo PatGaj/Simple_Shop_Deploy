@@ -9,8 +9,8 @@ import { useProfileLogic } from "./useProfileLogic";
 export default function UserProfile() {
   const { profile, loading, error } = useProfileLogic();
 
-  if (loading) return <Loading text="Profil loading" />;
-  if (error) return <p className="p-10 text-red-500">Błąd: {error}</p>;
+  if (loading) return <Loading text="Profil loading..." />;
+  if (error) return <p className="p-10 text-red-500">{error}</p>;
   if (!profile) return <p className="p-10">Brak danych profilu.</p>;
 
   return (
