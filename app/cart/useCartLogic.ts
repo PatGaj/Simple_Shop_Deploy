@@ -31,7 +31,7 @@ export function useCartLogic() {
     }
     (async () => {
       const ids = localCart.map((c) => Number(c.id));
-      const res = await fetch(`${process.env.NEXTAUTH_URL || ''}/api/cart`, {
+      const res = await fetch(`${process.env.NEXTAUTH_URL || ""}/api/cart`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(ids),

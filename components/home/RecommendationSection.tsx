@@ -1,26 +1,62 @@
 "use client";
-import { Product } from "@prisma/client/";
+
+import { useEffect, useState } from "react";
+import { Product } from "@prisma/client";
 import ProductCard from "../products/ProductCard";
 import TileContainer from "./TileContainer";
+import Loading from "../Loading";
+import { useFetchWithRetry } from "@/hooks/useFetchWithRetry";
 
 type ProductWithCategory = Product & {
-  category: {
-    name: string;
-  };
+  category: { name: string };
 };
 
-import { useState, useEffect } from "react";
 export default function RecommendationSection() {
+  const fetchWithRetry = useFetchWithRetry();
   const [products, setProducts] = useState<ProductWithCategory[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/products/recomendation")
-      .then((r) => r.json())
-      .then(setProducts)
-      .catch(console.error);
-  }, []);
+    async function fetchRecommendations() {
+      const baseUrl = process.env.NEXTAUTH_URL || "";
+      const url = `${baseUrl}/api/products/recomendation`;
 
-  if (!products) return <div>Ładowanie…</div>;
+      try {
+        const res = await fetchWithRetry(url);
+        const data: ProductWithCategory[] = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("Błąd podczas pobierania rekomendacji:", err);
+        setError("Nie udało się pobrać rekomendowanych produktów");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchRecommendations();
+  }, [fetchWithRetry]);
+
+  if (loading) {
+    return (
+      <TileContainer title="Recommendation" overflow>
+        <Loading text="Ładowanie rekomendacji…" />
+      </TileContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <TileContainer title="Recommendation" overflow>
+        <div className="p-8 text-center text-red-500">{error}</div>
+      </TileContainer>
+    );
+  }
+
+  if (!products || products.length === 0) {
+    return null;
+  }
+
   return (
     <TileContainer title="Recommendation" overflow>
       {products.map((product) => (

@@ -1,28 +1,67 @@
 "use client";
-import Tile from "./Tile";
+
 import { useEffect, useState } from "react";
-import TileContainer from "./TileContainer";
 import Link from "next/link";
-import { Category } from "@prisma/client/";
+import Tile from "./Tile";
+import TileContainer from "./TileContainer";
+import Loading from "../Loading";
+import { Category } from "@prisma/client";
+import { useFetchWithRetry } from "@/hooks/useFetchWithRetry";
 
 export default function CategorySection() {
-  const [category, setCategory] = useState<Category[]>([]);
+  const fetchWithRetry = useFetchWithRetry();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchBrands = async () => {
-      const res = await fetch(`${process.env.NEXTAUTH_URL || ''}/api/category?fields=name,iconUrl`);
-      const data = await res.json();
-      setCategory(data);
-    };
+    async function fetchCategories() {
+      const baseUrl = process.env.NEXTAUTH_URL || "";
+      const url = `${baseUrl}/api/category?fields=name,iconUrl`;
 
-    fetchBrands();
-  }, []);
+      try {
+        const res = await fetchWithRetry(url);
+        const data: Category[] = await res.json();
+        setCategories(data);
+      } catch (err) {
+        console.error("Błąd podczas pobierania kategorii:", err);
+        setError("Nie udało się pobrać kategorii");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCategories();
+  }, [fetchWithRetry]);
+
+  if (loading) {
+    return (
+      <TileContainer title="Category">
+        <Loading text="Ładowanie kategorii…" />
+      </TileContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <TileContainer title="Category">
+        <div className="p-8 text-center text-red-500">{error}</div>
+      </TileContainer>
+    );
+  }
+
+  if (!categories.length) {
+    return null;
+  }
 
   return (
     <TileContainer title="Category">
-      {category.map((element) => (
-        <Link key={element.id} href={`/products?category=${element.name}`}>
-          <Tile imageURL={element.iconUrl} title={element.name} className="h-[80px]" />
+      {categories.map((cat) => (
+        <Link
+          key={cat.id}
+          href={`/products?category=${encodeURIComponent(cat.name)}`}
+        >
+          <Tile imageURL={cat.iconUrl} title={cat.name} className="h-[80px]" />
         </Link>
       ))}
     </TileContainer>
