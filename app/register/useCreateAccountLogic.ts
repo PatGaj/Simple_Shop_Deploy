@@ -85,7 +85,7 @@ export function useCreateAccountLogic() {
     showConfirmPassword,
     toggleShowConfirmPassword,
     register,
-    onSubmit,
+    submitHandler: onSubmit,
     errors,
     isSubmitting,
     watch,
