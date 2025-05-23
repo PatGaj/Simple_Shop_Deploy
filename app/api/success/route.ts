@@ -52,9 +52,9 @@ export async function POST(request: Request) {
     return NextResponse.json(order, { status: 201 });
   } catch (error) {
     console.error("Błąd tworzenia zamówienia:", error);
-    return NextResponse.json(
-      { error: "Wewnętrzny błąd serwera" },
-      { status: 500 }
-    );
+return NextResponse.json(
+  { error: (error as Error).message },
+  { status: 500 }
+);
   }
 }

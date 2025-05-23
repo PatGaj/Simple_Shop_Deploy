@@ -78,11 +78,12 @@ export async function POST(req: NextRequest) {
       { address },
       { status: existing ? 200 : 201 }
     );
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: "Cannot save address" },
+      { error: `"Cannot save address"${(error as Error).message}` },
       { status: 500 }
     );
+
   }
 }

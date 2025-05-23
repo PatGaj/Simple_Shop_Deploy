@@ -25,8 +25,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }
 
     return NextResponse.json(product);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+  { error: (error as Error).message },
+  { status: 500 }
+);
   }
 }
