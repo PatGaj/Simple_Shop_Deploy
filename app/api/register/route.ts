@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { hashPassword } from "@/lib/encryption"
 import { prisma } from "@/lib/prisma";
