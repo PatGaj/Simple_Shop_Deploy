@@ -1,10 +1,41 @@
 # Symulacja Sklepu Internetowego
 
-Projekt symulacji funkcjonalnego sklepu internetowego stworzony w oparciu o **Next.js**, zgodnie z dostarczonym projektem graficznym w **Figmie** oraz szczegółowymi wymaganiami technicznymi. Aplikacja ma na celu zaprezentowanie umiejętności tworzenia nowoczesnej, responsywnej aplikacji fullstack z wykorzystaniem aktualnych dobrych praktyk programistycznych.
+Projekt symulacji sklepu internetowego stworzony w oparciu o **Next.js**, zgodnie z dostarczonym projektem graficznym w **Figmie** oraz szczegółowymi wymaganiami technicznymi. Aplikacja ma na celu zaprezentowanie umiejętności tworzenia nowoczesnej aplikacji fullstack.
+
+# Uruchomienie
+
+## .env potrzebne do uruchomienia projektu
+
+- **DATABASE_URL** – Pełny URL do bazy danych, który zawiera wszystkie szczegóły niezbędne do nawiązania połączenia z bazą danych.
+- **DIRECT_URL** – URL do bezpośredniego połączenia, często wykorzystywany w celu szybszego dostępu do bazy bez pośredników.
+- **NEXTAUTH_SECRET** – Sekretny klucz wykorzystywany do podpisywania tokenów i zapewnienia bezpieczeństwa sesji użytkowników w NextAuth.js.
+- **NEXTAUTH_URL** – URL aplikacji, który wskazuje adres, pod którym działa aplikacja NextAuth.js.
+- **DATABASE_USER** – Użytkownik bazy danych, który ma odpowiednie uprawnienia do łączenia się z bazą danych.
+- **DATABASE_PASSWORD** – Hasło użytkownika bazy danych.
+- **DATABASE_NAME** – Nazwa bazy danych.
+
+## Uruchomienie krok po kroku
+
+- **npm install** – Instalacja zależności
+- **npm run db:up** – Uruchomienie bazy danych
+- **npm run postinstall** – Wygenerowanie modeli Prisma
+- **npx prisma migrate dev** --name init(zamiast init wpisać nazwę nowej migracji) – Stworzenie migracji
+- **npx prisma db seed** – Załadowania początkowych danych do bazy
+- **npm run dev** – Uruchomienie aplikacji w trybie deweloperskim
+
+- **npm run start:all** - Uruchomienie bazy danych i aplikację w trybie deweloperskim.(po początkowej )
+
+# Speed insights
+
+![Speed insights dla mobile](./public/screenshots/screeanshot1.png)
+[Kliknij tutaj, aby przejść do Speed insights dla mobile](https://pagespeed.web.dev/analysis/https-simple-shop-sable-vercel-app/595qqxo3j5?hl=pl&form_factor=mobile)
+
+![Speed insights dla desktop](./public/screenshots/screeanshot2.png)
+[Kliknij tutaj, aby przejść do Speed insights dla desktop](https://pagespeed.web.dev/analysis/https-simple-shop-sable-vercel-app/595qqxo3j5?hl=pl&form_factor=desktop)
 
 ## Cel projektu
 
-Celem projektu jest stworzenie kompletnej aplikacji e-commerce z następującymi kluczowymi funkcjonalnościami:
+Celem projektu jest stworzenie symulacji aplikacji e-commerce z następującymi kluczowymi funkcjonalnościami:
 
 - System logowania i rejestracji użytkownika
 - Strona główna
@@ -26,24 +57,16 @@ Projekt został zbudowany z wykorzystaniem następujących technologii:
 - **PostgreSQL** – relacyjna baza danych
 - **Docker** – środowisko deweloperskie w kontenerach
 
-## Założenia techniczne i funkcjonalne
-
-- Aplikacja musi być w pełni wykonana w **Next.js**
-- Projekt graficzny z Figmy ma być odwzorowany **precyzyjnie**
-- Projekt musi być **w pełni responsywny**, także na urządzeniach mobilnych
-- Stylowanie interfejsu:
-  - Wykorzystanie **Tailwind CSS**
-  - Zdefiniowane **zmienne kolorystyczne**
-  - Odpowiednio dobrana **typografia**
-- Komponenty wielokrotnego użytku (np. `Button`, `Input`) zawierają **wszystkie stany i warianty** widoczne w zakładce "Component" w Figmie
-- **Przejrzysta struktura projektu**, zgodna z dobrymi praktykami Next.js
-- Dane pobierane w **komponentach serwerowych**
-- Backend oparty o **API Routes** w Next.js
-- Grafiki w bazie danych zapisane jako **adresy URL**
-- Baza danych **PostgreSQL** skonteneryzowana za pomocą Dockera
-- Dane początkowe inicjalizowane poprzez **skrypt seed**, uruchamiany z `package.json`
-- Aplikacja wdrożona na **Vercel**, z odpowiednią konfiguracją bazy danych
-
 ## Wdrożenie
 
-Aplikacja zostanie wdrożona na platformie **Vercel**, z pełną integracją backendu i bazy danych. Szczegóły dotyczące konfiguracji zostaną dodane w trakcie rozwoju projektu.
+Aplikacja zostanie wdrożona na platformie **Vercel**, z pełną integracją backendu i bazy danych.
+
+# Galeria
+
+![Speed insights dla mobile](./public/screenshots/screeanshot3.png)
+![Speed insights dla mobile](./public/screenshots/screeanshot4.png)
+![Speed insights dla mobile](./public/screenshots/screeanshot5.png)
+![Speed insights dla mobile](./public/screenshots/screeanshot6.png)
+![Speed insights dla mobile](./public/screenshots/screeanshot7.png)
+![Speed insights dla mobile](./public/screenshots/screeanshot8.png)
+![Speed insights dla mobile](./public/screenshots/screeanshot9.png)

@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
+import { useAlert } from "@/hooks/useAlert";
 
 export type CartItem = {
   id: string;
+  name?: string;
   quantity: number;
   note: string;
   cardAdd?: boolean;
@@ -11,6 +14,9 @@ export type CartItem = {
 
 export function useCart() {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const notification = useAlert();
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
 
   useEffect(() => {
     const raw = localStorage.getItem("cart") || "[]";
@@ -27,7 +33,7 @@ export function useCart() {
   }, []);
 
   const addToCart = useCallback(
-    (id: string, quantity = 1, stock: number, cardAdd?: boolean, addition?: boolean) => {
+    (id: string, name: string, quantity = 1, stock: number) => {
       const raw = localStorage.getItem("cart") || "[]";
       let current: CartItem[];
       try {
@@ -35,17 +41,21 @@ export function useCart() {
       } catch {
         current = [];
       }
-
       const idx = current.findIndex((item) => item.id === id);
+      const cartQuantity = current[idx]?.quantity || 0;
+
+      if (!isLoggedIn) {
+        notification({ type: "warning", message: "Log in to add items to your cart" });
+        return;
+      } else if (stock - cartQuantity <= 0) {
+        notification({ type: "warning", message: `No items available` });
+        return;
+      }
+      notification({ type: "success", message: `${name} added to basket in quantity ${quantity}` });
+
       if (idx > -1) {
-        if (!(cardAdd && current[idx].quantity >= 1)) {
-          if (addition) {
-            if (current[idx].quantity + quantity <= stock) {
-              current[idx].quantity += quantity;
-            }
-          } else {
-            current[idx].quantity = quantity;
-          }
+        if (current[idx].quantity + quantity <= stock) {
+          current[idx].quantity += quantity;
         }
       } else {
         current.push({ id, quantity, note: "" });
@@ -53,7 +63,7 @@ export function useCart() {
 
       sync([...current]);
     },
-    [sync]
+    [sync, isLoggedIn, notification]
   );
 
   const updateQuantity = useCallback(

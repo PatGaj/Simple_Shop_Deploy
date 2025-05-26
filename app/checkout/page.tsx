@@ -8,6 +8,7 @@ import CheckoutSection from "@/components/checkout/CheckoutSection";
 import { ShieldIcon } from "@/components/icons";
 import PaymentLogo from "@/components/footer/PaymentLogo";
 import { useCheckoutLogic } from "./useCheckoutLogic";
+import Loading from "@/components/ui/Loading";
 
 export default function CheckoutPage() {
   const {
@@ -22,12 +23,10 @@ export default function CheckoutPage() {
     grandTotal,
     handlePay,
   } = useCheckoutLogic();
+  
 
   if (status === "loading") {
-    return <div>Weryfikuję sesję…</div>;
-  }
-  if (status === "unauthenticated") {
-    return <div>Musisz być zalogowany, żeby zrobić checkout.</div>;
+    return <Loading text="Verifying the session..."/>;
   }
 
   return (

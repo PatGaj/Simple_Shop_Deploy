@@ -12,15 +12,14 @@ import { useSignInLogic } from "./useSignInLogic";
 export default function SignInForm() {
   const {
     step,
-    email,
+    identifier,
     password,
     error,
     showPassword,
-    isEmailValid,
     canSubmitPassword,
-    handleEmailContinue,
-    handleBackToEmail,
-    handleEmailChange,
+    handleIdentifierContinue,
+    handleBackToIdentifier,
+    handleIdentifierChange,
     handlePasswordChange,
     toggleShowPassword,
     handleSubmit,
@@ -35,38 +34,39 @@ export default function SignInForm() {
           {step === "password" && (
             <Button
               withLeftIcon
-              onClick={handleBackToEmail}
+              onClick={handleBackToIdentifier}
               leftIcon={<LeftArrowIcon className="text-xs" />}
             >
-              Back to email
+              Back to Email/phone number
             </Button>
           )}
         </div>
 
         <hr className="text-[var(--color-border-secondary)] my-5" />
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          {step === "email" ? (
+          {step === "identifier" ? (
             <>
               <InputField
                 withLabel
-                label="Email"
-                type="email"
-                placeholder="Your email"
-                value={email}
-                onChange={e => handleEmailChange(e.target.value)}
-                onKeyDown={e => {
+                label="Email or phone number"
+                type="text"
+                placeholder="Enter email or phone number"
+                value={identifier}
+                onChange={(e) => handleIdentifierChange(e.target.value)}
+                onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    handleEmailContinue();
+                    handleIdentifierContinue();
                   }
                 }}
               />
-              {error && step === "email" && <p className="text-danger-500 text-sm">{error}</p>}
+              {error && step === "identifier" && (
+                <p className="text-danger-500 text-sm">{error}</p>
+              )}
               <Button
                 buttonStyle="fill"
                 type="button"
-                onClick={handleEmailContinue}
-                disabled={!isEmailValid}
+                onClick={handleIdentifierContinue}
               >
                 Continue
               </Button>
@@ -79,11 +79,19 @@ export default function SignInForm() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Your password"
                 value={password}
-                onChange={e => handlePasswordChange(e.target.value)}
+                onChange={(e) => handlePasswordChange(e.target.value)}
                 withRightIcon
                 rightIcon={
-                  <button type="button" onClick={toggleShowPassword} className="cursor-pointer">
-                    {showPassword ? <VisibleIcon className="text-2xl" /> : <HiddenIcon className="text-2xl" />}
+                  <button
+                    type="button"
+                    onClick={toggleShowPassword}
+                    className="cursor-pointer"
+                  >
+                    {showPassword ? (
+                      <VisibleIcon className="text-2xl" />
+                    ) : (
+                      <HiddenIcon className="text-2xl" />
+                    )}
                   </button>
                 }
               />
@@ -104,7 +112,7 @@ export default function SignInForm() {
             </>
           )}
           <p className="text-center textM">
-            Don’t have an account?{' '}
+            Don’t have an account?{" "}
             <Link href="/register" className="font-semibold">
               Register
             </Link>

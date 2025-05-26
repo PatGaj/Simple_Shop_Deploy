@@ -44,6 +44,9 @@ type Totals = {
 export function useSuccessLogic() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  if (!session?.user) {
+    router.push("/");
+  }
   const userId = session?.user?.id;
   const fetchWithRetry = useFetchWithRetry();
 

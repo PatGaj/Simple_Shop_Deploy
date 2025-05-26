@@ -2,7 +2,8 @@
 
 import React from "react";
 import Avatar from "@/components/ui/Avatar";
-import {signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
+import Button from "../ui/Button";
 
 export type ProfileSidebarProps = {
   firstName: string;
@@ -20,12 +21,9 @@ export default function ProfileSidebar({ firstName, email }: ProfileSidebarProps
         </div>
       </div>
       <hr className="text-[var(--color-border-secondary)]" />
-      <button
-        onClick={() => signOut({ callbackUrl: "/" })}
-        className="w-max text-[var(--color-primary)]"
-      >
+      <Button onClick={() => signOut({ callbackUrl: "/" })} buttonStyle="text">
         Logout
-      </button>
+      </Button>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import CartProductItem from "@/components/cart/CartProductItem";
 import { useCartLogic } from "./useCartLogic";
 
 export default function Cart() {
+  
   const {
     products,
     selectAll,
@@ -22,6 +23,8 @@ export default function Cart() {
     toggleSelectAll,
     handleCheckout,
   } = useCartLogic();
+
+
 
   return (
     <div className="flex gap-x-12 items-start w-full p-10">

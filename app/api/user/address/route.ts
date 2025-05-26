@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
@@ -5,13 +6,11 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
- 
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const userId = Number(session.user.id);
-
 
   try {
     const address = await prisma.adress.findFirst({
@@ -19,23 +18,18 @@ export async function GET() {
     });
     return NextResponse.json({ address });
   } catch (err) {
-    console.error( err);
-    return NextResponse.json(
-      { error: "Cannot fetch address" },
-      { status: 500 }
-    );
+    console.error(err);
+    return NextResponse.json({ error: "Cannot fetch address" }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
-  
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const userId = Number(session.user.id);
 
- 
   let body: {
     country?: string;
     province?: string;
@@ -46,20 +40,13 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json(
-      { error: "Invalid JSON" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   const { country, province, city, postalCode } = body;
   if (!country || !province || !city || !postalCode) {
-    return NextResponse.json(
-      { error: "All address fields are required" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "All address fields are required" }, { status: 400 });
   }
-
 
   try {
     const existing = await prisma.adress.findFirst({ where: { userId } });
@@ -74,15 +61,9 @@ export async function POST(req: NextRequest) {
         data: { userId, country, province, city, postalCode },
       });
     }
-    return NextResponse.json(
-      { address },
-      { status: existing ? 200 : 201 }
-    );
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json(
-      { error: "Cannot save address" },
-      { status: 500 }
-    );
+    return NextResponse.json({ address }, { status: existing ? 200 : 201 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: `"Cannot save address"${(error as Error).message}` }, { status: 500 });
   }
 }

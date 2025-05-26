@@ -61,6 +61,7 @@ export default function CreateAccount() {
             {...register("email")}
             errorMessage={errors.email?.message}
             destructive={!!errors.email}
+            withSupportText
           />
 
           <InputField
@@ -71,6 +72,7 @@ export default function CreateAccount() {
             {...register("firstName")}
             errorMessage={errors.firstName?.message}
             destructive={!!errors.firstName}
+            withSupportText
           />
 
           <InputField
@@ -81,6 +83,7 @@ export default function CreateAccount() {
             {...register("phone")}
             errorMessage={errors.phone?.message}
             destructive={!!errors.phone}
+            withSupportText
           />
 
           <InputField
@@ -115,6 +118,7 @@ export default function CreateAccount() {
             {...register("confirmPassword")}
             errorMessage={errors.confirmPassword?.message}
             destructive={!!errors.confirmPassword}
+            withSupportText
           />
 
           <div className="flex flex-col gap-y-4 textL font-medium">

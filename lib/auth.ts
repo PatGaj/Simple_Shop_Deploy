@@ -3,34 +3,55 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/encryption";
+import type { Prisma } from "@prisma/client";
+
+function isEmail(val: string) {
+  return /\S+@\S+\.\S+/.test(val);
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   providers: [
     CredentialsProvider({
-      name: "Email i hasło",
+      name: "Email or phone number and password",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Hasło", type: "password" },
+        identifier: {
+          label: "Email or phone number",
+          type: "text",
+          placeholder: "example@ex.com lub 48012345678",
+        },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials.password) {
-          throw new Error("Proszę podać email i hasło");
+        if (!credentials?.identifier || !credentials.password) {
+          throw new Error("Please enter your e-mail or phone number and password");
         }
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+
+        const { identifier, password } = credentials;
+
+        const whereClause: Prisma.UserWhereInput = isEmail(identifier)
+          ? { email: identifier }
+          : { phone: identifier };
+
+        const user = await prisma.user.findFirst({
+          where: whereClause,
         });
+
         if (!user) {
-          throw new Error("Brak użytkownika o takim adresie");
+          throw new Error("User not found");
         }
 
-        const isValid = await verifyPassword(credentials.password, user.password);
+        const isValid = await verifyPassword(password, user.password);
         if (!isValid) {
-          throw new Error("Nieprawidłowe hasło");
+          throw new Error("Incorrect password");
         }
 
-        return { id: user.id.toString(), email: user.email, name: user.firstName };
+        return {
+          id: user.id.toString(),
+          email: user.email,
+          name: user.firstName,
+        };
       },
     }),
   ],

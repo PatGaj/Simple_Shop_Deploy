@@ -1,68 +1,31 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { Brand } from "@prisma/client";
 import Tile from "./Tile";
 import TileContainer from "./TileContainer";
-import Loading from "../Loading";
-import { Brand } from "@prisma/client";
-import { useFetchWithRetry } from "@/hooks/useFetchWithRetry";
+import Link from "next/link";
+import { getDataBrands } from "@/lib/data/getDataBrands";
 
-export default function BrandSection() {
-  const fetchWithRetry = useFetchWithRetry();
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default async function BrandSection() {
+  try {
+    const brands = await getDataBrands({ fields: ["id", "name", "imageUrl"] });
+    console.log("Brands:", brands);
 
-  useEffect(() => {
-    async function fetchBrands() {
-      const baseUrl = process.env.NEXTAUTH_URL || "";
-      const url = `${baseUrl}/api/brand?fields=name,imageUrl`;
+    if (!brands.length) return null;
 
-      try {
-        const res = await fetchWithRetry(url);
-        const data: Brand[] = await res.json();
-        setBrands(data);
-      } catch (err) {
-        console.error("Błąd podczas pobierania marek:", err);
-        setError("Nie udało się pobrać marek");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchBrands();
-  }, [fetchWithRetry]);
-
-  if (loading) {
     return (
-      <TileContainer title="Brand" overflow>
-        <Loading text="Ładowanie marek…" />
+      <TileContainer title="Brand">
+        {brands.map((brand: Brand) => (
+          <Link key={brand.id + brand.name} href={`/products?brand=${encodeURIComponent(brand.name)}`}>
+            <Tile key={brand.id} imageURL={brand.imageUrl} title={brand.name} className="h-[46px]" />
+          </Link>
+        ))}
+      </TileContainer>
+    );
+  } catch (err) {
+    console.error("Błąd podczas pobierania marek:", err);
+    return (
+      <TileContainer title="Brand">
+        <div className="p-8 text-center text-red-500">Failed to download brands</div>
       </TileContainer>
     );
   }
-
-  if (error) {
-    return (
-      <TileContainer title="Brand" overflow>
-        <div className="p-8 text-center text-red-500">{error}</div>
-      </TileContainer>
-    );
-  }
-
-  if (!brands.length) {
-    return null;
-  }
-
-  return (
-    <TileContainer title="Brand" overflow>
-      {brands.map((brand) => (
-        <Tile
-          key={brand.id}
-          imageURL={brand.imageUrl}
-          title={brand.name}
-          className="h-[46px]"
-        />
-      ))}
-    </TileContainer>
-  );
 }

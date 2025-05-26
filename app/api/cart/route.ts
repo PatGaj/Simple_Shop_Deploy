@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
@@ -23,6 +25,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(products);
   } catch (error) {
     console.error("Cart API error:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return NextResponse.json(
+  { error: (error as Error).message },
+  { status: 500 }
+);
   }
 }

@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -21,6 +23,7 @@ export async function GET() {
         price: true,
         description: true,
         discount: true,
+        stock: true,
         category: {
           select: {
             name: true,
@@ -31,7 +34,10 @@ export async function GET() {
 
     return NextResponse.json(products);
   } catch (error) {
-    console.error('Błąd:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    console.error('Error:', error);
+    return NextResponse.json(
+  { error: (error as Error).message },
+  { status: 500 }
+);
   }
 }

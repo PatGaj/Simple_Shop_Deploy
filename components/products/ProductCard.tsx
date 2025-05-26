@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { CartIcon } from "../icons";
 import Badge from "../ui/Badge";
-import { useAlert } from "@/hooks/useAlert";
 import { useCart } from "@/hooks/useCart";
+import clsx from "clsx";
 
 type ProductCardProps = {
   id: number;
@@ -25,27 +25,30 @@ export default function ProductCard({
   discount,
   stock = 0,
 }: ProductCardProps) {
-  const info = useAlert();
   const { addToCart } = useCart();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    addToCart(id.toString(), 1, stock, true);
-    info({ type: "success", message: `${itemName} added to your shopping cart` });
+    addToCart(id.toString(), itemName, 1, stock);
   };
 
   const finalPrice = discount !== 0 ? price - discount : price;
 
   return (
     <Link href={`/products/${id}`}>
-      <div className="flex flex-col gap-y-4 items-center p-4 border border-[var(--color-border-primary)] bg-[var(--color-tile)] rounded-md w-[300px] cursor-pointer hover:shadow-md transition-shadow duration-200">
+      <div className="flex flex-col gap-y-4 items-center p-4 border border-[var(--color-border-primary)] bg-[var(--color-tile)] rounded-md w-[300px] cursor-pointer hover:scale-102 transition-scale duration-300">
         <div className="flex justify-center items-center relative rounded-md bg-base-white-2 w-full">
           <img src={imageURL} alt={itemName} className="h-[200px]" />
           <button
             onClick={handleAddToCart}
-            className="w-8 h-8 p-1 rounded-md bg-[var(--color-tile)] absolute top-4 left-4 flex items-center justify-center cursor-pointer"
+            className={clsx(
+              "w-8 h-8 p-1 rounded-md bg-[var(--color-tile)] absolute top-4 left-4 flex items-center justify-center cursor-pointer",
+              stock === 0 && "cursor-not-allowed opacity-50",
+              stock > 0 && "hover:bg-[var(--color-primary-600)] transition-colors duration-200",
+              stock > 0 && "active:bg-[var(--color-primary-800)]"
+            )}
           >
             <CartIcon className="text-[var(--textColor-primary)]" />
           </button>

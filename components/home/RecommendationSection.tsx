@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Product } from "@prisma/client";
 import ProductCard from "../products/ProductCard";
 import TileContainer from "./TileContainer";
-import Loading from "../Loading";
+import Loading from "../ui/Loading";
 import { useFetchWithRetry } from "@/hooks/useFetchWithRetry";
 
 type ProductWithCategory = Product & {
@@ -20,7 +20,7 @@ export default function RecommendationSection() {
   useEffect(() => {
     async function fetchRecommendations() {
       const baseUrl = process.env.NEXTAUTH_URL || "";
-      const url = `${baseUrl}/api/products/recomendation`;
+      const url = `${baseUrl}/api/products/recommendation`;
 
       try {
         const res = await fetchWithRetry(url);
@@ -39,7 +39,7 @@ export default function RecommendationSection() {
 
   if (loading) {
     return (
-      <TileContainer title="Recommendation" overflow>
+      <TileContainer title="Recommendation">
         <Loading text="Ładowanie rekomendacji…" />
       </TileContainer>
     );
@@ -47,7 +47,7 @@ export default function RecommendationSection() {
 
   if (error) {
     return (
-      <TileContainer title="Recommendation" overflow>
+      <TileContainer title="Recommendation">
         <div className="p-8 text-center text-red-500">{error}</div>
       </TileContainer>
     );
@@ -58,7 +58,7 @@ export default function RecommendationSection() {
   }
 
   return (
-    <TileContainer title="Recommendation" overflow>
+    <TileContainer title="Recommendation">
       {products.map((product) => (
         <ProductCard
           key={product.id}
@@ -66,6 +66,7 @@ export default function RecommendationSection() {
           imageURL={product.imageUrl}
           category={product.category.name}
           itemName={product.name}
+          stock={product.stock}
           price={product.price}
           discount={product.discount}
         />

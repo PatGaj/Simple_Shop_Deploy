@@ -1,33 +1,36 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
+
     const pageParam = parseInt(searchParams.get("page") || "1");
     const limitParam = parseInt(searchParams.get("limit") || "6");
-    const categoryParam = searchParams.get("category");
-    const brandParam = searchParams.get("brand");
+    const skipItems = (pageParam - 1) * limitParam;
+
     const sortedParam = searchParams.get("sorted");
+    const sortedByPrice = sortedParam === "highest_price" ? "desc" : "asc";
+
+    const categoryParam = searchParams.get("category")?.split("_");
+    const brandParam = searchParams.get("brand")?.split("_");
+
     const maxPriceParam = searchParams.get("maxPrice");
     const minPriceParam = searchParams.get("minPrice");
 
-    const skipItems = (pageParam - 1) * limitParam;
-    const sortedByPrice = sortedParam === "highest_price" ? "desc" : "asc";
+const filters: Prisma.ProductWhereInput = {};
 
-    const filters: {
-      category?: { name: string };
-      brand?: { name: string };
-      price?: { gte?: number; lte?: number };
-    } = {};
     if (categoryParam) {
       filters.category = {
-        name: categoryParam,
+        name: {in: categoryParam},
       };
     }
     if (brandParam) {
       filters.brand = {
-        name: brandParam,
+        name: { in: brandParam },
       };
     }
     if (minPriceParam || maxPriceParam) {
@@ -54,6 +57,7 @@ export async function GET(request: Request) {
         price: true,
         imageUrl: true,
         discount: true,
+        stock: true,
         category: {
           select: {
             name: true,
@@ -67,7 +71,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ products, totalPages, currentPage: pageParam, totalItems: totalCount });
   } catch (error) {
-    console.error("Błąd:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error("Error:", error);
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
