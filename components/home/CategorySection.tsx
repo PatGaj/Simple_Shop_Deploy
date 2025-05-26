@@ -1,69 +1,31 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import Tile from "./Tile";
 import TileContainer from "./TileContainer";
-import Loading from "../Loading";
-import { Category } from "@prisma/client";
-import { useFetchWithRetry } from "@/hooks/useFetchWithRetry";
+import { getDataCategories } from "@/lib/data/getDataCategories";
 
-export default function CategorySection() {
-  const fetchWithRetry = useFetchWithRetry();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default async function CategorySection() {
+  try {
+    const categories = await getDataCategories({
+      fields: ["id", "name", "iconUrl"],
+    });
 
-  useEffect(() => {
-    async function fetchCategories() {
-      const baseUrl = process.env.NEXTAUTH_URL || "";
-      const url = `${baseUrl}/api/category?fields=name,iconUrl`;
+    if (!categories.length) return null;
 
-      try {
-        const res = await fetchWithRetry(url);
-        const data: Category[] = await res.json();
-        setCategories(data);
-      } catch (err) {
-        console.error("Błąd podczas pobierania kategorii:", err);
-        setError("Nie udało się pobrać kategorii");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchCategories();
-  }, [fetchWithRetry]);
-
-  if (loading) {
     return (
       <TileContainer title="Category">
-        <Loading text="Ładowanie kategorii…" />
+        {categories.map((cat) => (
+          <Link key={cat.id + cat.name} href={`/products?category=${encodeURIComponent(cat.name)}`}>
+            <Tile imageURL={cat.iconUrl} title={cat.name} className="h-[80px]" />
+          </Link>
+        ))}
+      </TileContainer>
+    );
+  } catch (err) {
+    console.error("Błąd podczas pobierania kategorii:", err);
+    return (
+      <TileContainer title="Category">
+        <div className="p-8 text-center text-red-500">Failed to download category</div>
       </TileContainer>
     );
   }
-
-  if (error) {
-    return (
-      <TileContainer title="Category">
-        <div className="p-8 text-center text-red-500">{error}</div>
-      </TileContainer>
-    );
-  }
-
-  if (!categories.length) {
-    return null;
-  }
-
-  return (
-    <TileContainer title="Category">
-      {categories.map((cat) => (
-        <Link
-          key={cat.id}
-          href={`/products?category=${encodeURIComponent(cat.name)}`}
-        >
-          <Tile imageURL={cat.iconUrl} title={cat.name} className="h-[80px]" />
-        </Link>
-      ))}
-    </TileContainer>
-  );
 }

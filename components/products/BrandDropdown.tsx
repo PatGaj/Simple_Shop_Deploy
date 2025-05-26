@@ -4,19 +4,19 @@ import Checkbox from "@/components/ui/Checkbox";
 import DropdownComponents from "@/components/ui/DropdownComponents/DropdownComponents";
 import { useEffect, useState } from "react";
 
-type CategoryDropdownClientProps = {
+type BrandDropdownClientProps = {
   limit?: number;
   onChange?: (data: string[]) => void;
   initial?: string[];
   options: string[];
 };
 
-export default function CategoryDropdown({
+export default function BrandDropdown({
   limit = 3,
   onChange,
   initial = ["All"],
   options,
-}: CategoryDropdownClientProps) {
+}: BrandDropdownClientProps) {
   const [selected, setSelected] = useState<string[]>(initial);
   useEffect(() => {
     onChange?.(selected);
@@ -31,33 +31,34 @@ export default function CategoryDropdown({
         return [...options];
       }
 
-      const nonAll = options.filter((o) => o !== "All");
-      let next: string[];
+      const nonAllOptions = options.filter((o) => o !== "All");
+      let newSelected: string[];
 
       if (prev.includes("All")) {
-        const specifics = [...nonAll];
-        if (specifics.includes(option)) {
-          next = specifics.filter((o) => o !== option);
+        const specificSelected = [...nonAllOptions];
+        if (specificSelected.includes(option)) {
+          newSelected = specificSelected.filter((o) => o !== option);
         } else {
-          next = [...specifics, option];
+          newSelected = [...specificSelected, option];
         }
       } else {
         if (prev.includes(option)) {
-          next = prev.filter((o) => o !== option);
+          newSelected = prev.filter((o) => o !== option);
         } else {
-          next = [...prev, option];
+          newSelected = [...prev, option];
         }
       }
 
-      if (next.length === nonAll.length) {
+      if (newSelected.length === nonAllOptions.length) {
         return [...options];
       }
-      return next;
+
+      return newSelected;
     });
   };
 
   return (
-    <DropdownComponents withTitle title="Category" limit={limit} defaultOpen>
+    <DropdownComponents withTitle title="Brand" limit={limit} defaultOpen>
       {options.map((option) => (
         <Checkbox
           key={option}

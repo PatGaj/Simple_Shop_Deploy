@@ -4,12 +4,40 @@ import { DropDownIcon } from "../icons";
 import DropdownComponents from "../ui/DropdownComponents/DropdownComponents";
 
 function PricingDropdown({ onChange }: { onChange?: (data: { minPrice: string; maxPrice: string }) => void }) {
-  const [max, setMax] = useState("");
-  const [min, setMin] = useState("");
+  const [min, setMin] = useState<string>("");
+  const [max, setMax] = useState<string>("");
 
   useEffect(() => {
     onChange?.({ minPrice: min, maxPrice: max });
   }, [min, max, onChange]);
+
+  const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const num = parseFloat(value);
+    if (value === "" || isNaN(num)) {
+      setMin(value);
+      return;
+    }
+    if (max !== "" && num > parseFloat(max)) {
+      setMin(max);
+    } else {
+      setMin(value);
+    }
+  };
+
+  const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const num = parseFloat(value);
+    if (value === "" || isNaN(num)) {
+      setMax(value);
+      return;
+    }
+    if (min !== "" && num < parseFloat(min)) {
+      setMax(min);
+    } else {
+      setMax(value);
+    }
+  };
 
   return (
     <DropdownComponents withTitle title="Price" defaultOpen>
@@ -18,7 +46,7 @@ function PricingDropdown({ onChange }: { onChange?: (data: { minPrice: string; m
         placeholder="$ Min Price"
         textButton="USD"
         value={min}
-        onChange={(e) => setMin(e.target.value)}
+        onChange={handleMinChange}
         withRightIcon
         rightIcon={<DropDownIcon />}
         className="w-full"
@@ -28,7 +56,7 @@ function PricingDropdown({ onChange }: { onChange?: (data: { minPrice: string; m
         placeholder="$ Max Price"
         textButton="USD"
         value={max}
-        onChange={(e) => setMax(e.target.value)}
+        onChange={handleMaxChange}
         withRightIcon
         rightIcon={<DropDownIcon />}
         className="w-full"

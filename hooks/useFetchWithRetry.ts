@@ -12,7 +12,6 @@ async function fetchWithRetry(
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch(input, init);
-      if (!res.ok) throw new Error(`Status ${res.status}`);
       return res;
     } catch (err) {
       lastError = err;

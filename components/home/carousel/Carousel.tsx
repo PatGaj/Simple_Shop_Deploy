@@ -1,68 +1,133 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Category } from "@prisma/client";
 import CarouselSlide from "./CarouselSlide";
 import CarouselControls from "./CarouselControls";
 import CarouselDots from "./CarouselDots";
-import Loading from "@/components/Loading";
-import { useFetchWithRetry } from "@/hooks/useFetchWithRetry";
+import { Category } from "@prisma/client";
 
-export default function Carousel() {
-  const fetchWithRetry = useFetchWithRetry();
-  const [categories, setCategories] = useState<Category[]>([]);
+const TRANSITION_DURATION = 500;
+
+type CarouselProps = { categories: Category[] };
+
+export default function Carousel({ categories }: CarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [targetIndex, setTargetIndex] = useState<number | null>(null);
+  const [stage, setStage] = useState<"idle" | "animatingOut" | "animatingIn">("idle");
+  const [animationDirection, setAnimationDirection] = useState<1 | -1>(1);
   const router = useRouter();
 
+  const startTransition = useCallback(
+    (newIndex: number, animationDirection: 1 | -1) => {
+      if (stage !== "idle") return;
+      setAnimationDirection(animationDirection);
+      setTargetIndex(newIndex);
+      setStage("animatingOut");
+    },
+    [stage]
+  );
+
+  const handlePrev = useCallback(() => {
+    const newIdx = activeIndex === 0 ? categories.length - 1 : activeIndex - 1;
+    startTransition(newIdx, -1);
+  }, [activeIndex, categories.length, startTransition]);
+
+  const handleNext = useCallback(() => {
+    const newIdx = activeIndex === categories.length - 1 ? 0 : activeIndex + 1;
+    startTransition(newIdx, 1);
+  }, [activeIndex, categories.length, startTransition]);
+
+  const handleDotSelect = useCallback(
+    (idx: number) => {
+      if (idx === activeIndex) return;
+      const dir = idx > activeIndex ? 1 : -1;
+      startTransition(idx, dir);
+    },
+    [activeIndex, startTransition]
+  );
+
+  const handleClick = useCallback(
+    (name: string) => {
+      router.push(`/products?category=${encodeURIComponent(name)}`);
+    },
+    [router]
+  );
+
   useEffect(() => {
-    async function fetchCategories() {
-      const baseUrl = process.env.NEXTAUTH_URL || "";
-      const url = `${baseUrl}/api/category?fields=name,imageUrl,description`;
+    if (stage !== "animatingOut") return;
+    const timeout = setTimeout(() => {
+      setActiveIndex(targetIndex!);
+      setStage("animatingIn");
+    }, TRANSITION_DURATION);
+    return () => clearTimeout(timeout);
+  }, [stage, targetIndex]);
 
-      try {
-        const res = await fetchWithRetry(url);
-        const data: Category[] = await res.json();
-        setCategories(data);
-      } catch (err) {
-        console.error("Błąd przy pobieraniu kategorii:", err);
-        setError("Nie udało się pobrać kategorii");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchCategories();
-  }, [fetchWithRetry]);
-
-  if (loading) return <Loading text="Ładowanie kategorii…" />;
-  if (error)   return <div className="flex justify-center p-8 text-red-500">{error}</div>;
-  if (!categories.length) return null;
-
-  const handlePrev = () =>
-    setActiveIndex(i => (i === 0 ? categories.length - 1 : i - 1));
-  const handleNext = () =>
-    setActiveIndex(i => (i === categories.length - 1 ? 0 : i + 1));
-  const handleClick = (name: string) =>
-    router.push(`/products?category=${encodeURIComponent(name)}`);
-
-  const current = categories[activeIndex];
+  useEffect(() => {
+    if (stage !== "animatingIn") return;
+    const timeout = setTimeout(() => {
+      setStage("idle");
+      setTargetIndex(null);
+    }, TRANSITION_DURATION);
+    return () => clearTimeout(timeout);
+  }, [stage]);
 
   return (
     <div className="flex flex-col gap-y-6 items-center">
-      <div className="w-full h-[452px] bg-[var(--color-tile)] border border-[var(--color-border-primary)] rounded-md relative overflow-hidden">
-        <CarouselSlide
-          category={current}
-          onButtonClick={() => handleClick(current.name)}
-        />
+      <div className="relative w-full h-[452px] overflow-hidden bg-[var(--color-tile)] border border-[var(--color-border-primary)] rounded-md">
+        {stage === "idle" && (
+          <div className="absolute inset-0">
+            <CarouselSlide
+              category={categories[activeIndex]}
+              onButtonClick={() => handleClick(categories[activeIndex].name)}
+            />
+          </div>
+        )}
+        {animationDirection === 1 ? (
+          <>
+            {stage === "animatingOut" && (
+              <div className="absolute inset-0 animate-slide-out-right">
+                <CarouselSlide
+                  category={categories[activeIndex]}
+                  onButtonClick={() => handleClick(categories[activeIndex].name)}
+                />
+              </div>
+            )}
+
+            {stage === "animatingIn" && (
+              <div className="absolute inset-0 animate-slide-in-left">
+                <CarouselSlide
+                  category={categories[targetIndex!]}
+                  onButtonClick={() => handleClick(categories[targetIndex!].name)}
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {stage === "animatingOut" && (
+              <div className="absolute inset-0 animate-slide-out-left">
+                <CarouselSlide
+                  category={categories[activeIndex]}
+                  onButtonClick={() => handleClick(categories[activeIndex].name)}
+                />
+              </div>
+            )}
+
+            {stage === "animatingIn" && (
+              <div className="absolute inset-0 animate-slide-in-right">
+                <CarouselSlide
+                  category={categories[targetIndex!]}
+                  onButtonClick={() => handleClick(categories[targetIndex!].name)}
+                />
+              </div>
+            )}
+          </>
+        )}
+
         <CarouselControls onPrev={handlePrev} onNext={handleNext} />
       </div>
-      <CarouselDots
-        count={categories.length}
-        activeIndex={activeIndex}
-        onSelect={setActiveIndex}
-      />
+      <CarouselDots count={categories.length} activeIndex={activeIndex} onSelect={handleDotSelect} />
     </div>
   );
 }
