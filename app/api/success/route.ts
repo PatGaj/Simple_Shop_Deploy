@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       userId,
       address,
       totalAmount,
-      items, 
+      items,
     }: {
       userId: number;
       address: string;
@@ -22,41 +22,55 @@ export async function POST(request: Request) {
       }[];
     } = await request.json();
 
-    
     if (!userId || !address || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
-        { error: "Niepoprawne dane zamówienia" },
+        { error: "Incorrect order data" },
         { status: 400 }
       );
     }
 
-   
-    const order = await prisma.order.create({
-      data: {
-        userId,
-        status: "PENDING",    
-        address,
-        totalAmount,
-        items: {
-          create: items.map((it) => ({
-            product: { connect: { id: it.productId } },
-            quantity: it.quantity,
-            note: it.note ?? null,
-            protection: it.protection,
-          })),
+    const order = await prisma.$transaction(async (tx) => {
+      const createdOrder = await tx.order.create({
+        data: {
+          userId,
+          status: "PENDING",
+          address,
+          totalAmount,
+          items: {
+            create: items.map((it) => ({
+              product: { connect: { id: it.productId } },
+              quantity: it.quantity,
+              note: it.note ?? null,
+              protection: it.protection,
+            })),
+          },
         },
-      },
-      include: {
-        items: true, 
-      },
+        include: {
+          items: true,
+        },
+      });
+
+      for (const it of items) {
+        await tx.product.update({
+          where: { id: it.productId },
+          data: {
+            stock: {
+              decrement: it.quantity,
+            },
+          },
+        });
+      }
+
+      return createdOrder;
     });
 
     return NextResponse.json(order, { status: 201 });
-  } catch (error) {
-    console.error("Błąd tworzenia zamówienia:", error);
-return NextResponse.json(
-  { error: (error as Error).message },
-  { status: 500 }
-);
+  } catch (error: unknown) {
+    console.error("Order creation error:", error);
+    const message = error instanceof Error ? error.message : "Unknown server error";
+    return NextResponse.json(
+      { error: message },
+      { status: 500 }
+    );
   }
 }

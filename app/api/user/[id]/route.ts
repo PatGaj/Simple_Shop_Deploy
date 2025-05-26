@@ -44,7 +44,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   });
 
   if (!user) {
-    return NextResponse.json({ message: "Użytkownik nie znaleziony" }, { status: 404 });
+    return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
 
  

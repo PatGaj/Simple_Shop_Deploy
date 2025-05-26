@@ -23,6 +23,7 @@ export async function GET() {
         price: true,
         description: true,
         discount: true,
+        stock: true,
         category: {
           select: {
             name: true,
@@ -33,7 +34,7 @@ export async function GET() {
 
     return NextResponse.json(products);
   } catch (error) {
-    console.error('Błąd:', error);
+    console.error('Error:', error);
     return NextResponse.json(
   { error: (error as Error).message },
   { status: 500 }
