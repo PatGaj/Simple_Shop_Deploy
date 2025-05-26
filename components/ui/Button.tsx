@@ -41,9 +41,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       xs: "py-1.5 textXS font-medium",
     };
     const hoverButton = {
-      stroke: "hover:border-primary-400",
-      fill: "hover:bg-primary-600",
-      text: "hover:text-primary-600",
+      stroke: "hover:border-primary-400 transform:border duration-200",
+      fill: "hover:bg-primary-600 transform:bg duration-200",
+      text: "hover:text-primary-600 transform:text duration-200",
     };
     const pressedButton = {
       stroke: "active:border-primary-400 active:text-primary-400",
@@ -52,7 +52,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
     const disabledButton = {
       stroke: "disabled:border-primary-300 disabled:text-primary-300",
-      fill: "disabled:bg-primary-300",
+      fill: "disabled:bg-primary-200",
       text: "disabled:text-primary-300",
     };
 
@@ -61,7 +61,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         type={rest.type ?? "button"}
         className={clsx(
-          "flex items-center justify-center gap-x-3.5 px-5 cursor-pointer h-max",
+          "flex items-center justify-center gap-x-3.5 px-5 cursor-pointer h-max disabled:cursor-not-allowed",
           styling[buttonStyle],
           sizing[buttonSize],
           hoverButton[buttonStyle],

@@ -24,8 +24,12 @@ const SERVICE_FEE = 0.5;
 export function useCheckoutLogic() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
   const fetchWithRetry = useFetchWithRetry();
-
   const [items, setItems] = useState<CheckoutItem[]>([]);
   const [protections, setProtections] = useState<Record<number, boolean>>({});
   const [address, setAddress] = useState<string>("");
@@ -39,7 +43,7 @@ export function useCheckoutLogic() {
         setLoading(true);
         const raw = localStorage.getItem("checkoutCart") || "[]";
         const localItems: LocalCheckoutItem[] = JSON.parse(raw);
-        if (!localItems.length) throw new Error("Brak produktów w koszyku");
+        if (!localItems.length) throw new Error("No products in the shopping cart");
 
         const ids = localItems.map((li) => parseInt(li.id, 10)).filter((n) => !isNaN(n));
         const urlCart = `${process.env.NEXTAUTH_URL || ""}/api/cart`;
@@ -62,7 +66,7 @@ export function useCheckoutLogic() {
         setProtections(initProt);
       } catch (err) {
         console.error("Error loading checkout items:", err);
-        setError("Błąd ładowania koszyka");
+        setError("Cart loading error");
       } finally {
         setLoading(false);
       }
@@ -114,7 +118,7 @@ export function useCheckoutLogic() {
       router.push("/checkout/success");
     } catch (err) {
       console.error("Payment error:", err);
-      setError("Płatność nie powiodła się");
+      setError("Payment failed");
     } finally {
       setLoading(false);
     }

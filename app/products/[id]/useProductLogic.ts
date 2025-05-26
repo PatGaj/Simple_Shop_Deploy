@@ -11,7 +11,7 @@ export type ProductWithCategory = Product & { category: { name: string } };
 
 export function useProductLogic() {
   const params = useParams();
-  const alert = useAlert();
+  const notification = useAlert();
   const { addToCart } = useCart();
   const fetchWithRetry = useFetchWithRetry();
 
@@ -40,7 +40,7 @@ export function useProductLogic() {
         if (!cancelled) {
           console.error("Błąd przy pobieraniu produktu:", err);
           setError("Nie udało się pobrać produktu");
-          alert({ type: "danger", message: "Błąd przy ładowaniu produktu" });
+          notification({ type: "danger", message: "Błąd przy ładowaniu produktu" });
         }
       } finally {
         if (!cancelled) {
@@ -53,16 +53,12 @@ export function useProductLogic() {
     return () => {
       cancelled = true;
     };
-  }, [params.id, alert, fetchWithRetry]);
+  }, [params.id, notification, fetchWithRetry]);
 
   const handleAddToCart = useCallback(() => {
     if (!product) return;
-    addToCart(product.id.toString(), quantity, product.stock, false, true);
-    alert({
-      type: "success",
-      message: `${product.name} został dodany do koszyka.`,
-    });
-  }, [product, quantity, addToCart, alert]);
+    addToCart(product.id.toString(), product.name, quantity, product.stock);
+  }, [product, quantity, addToCart]);
 
   const shippingEstimate = useMemo(() => {
     const today = new Date();

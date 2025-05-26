@@ -7,6 +7,7 @@ import Avatar from "../ui/Avatar";
 import Logo from "../ui/Logo";
 import Button from "../ui/Button";
 import { CartIcon } from "../icons";
+import clsx from "clsx";
 
 const Header = () => {
   const router = useRouter();
@@ -25,8 +26,14 @@ const Header = () => {
 
         {isLoading ? null : isLoggedIn ? (
           <div className="flex items-center gap-x-7">
-            <button onClick={() => router.push("/cart")} className="cursor-pointer" aria-label="Go to cart">
-              <CartIcon className="text-[var(--textColor-primary)]" />
+            <button
+              onClick={() => router.push("/cart")}
+              className={clsx(
+                "flex justify-center items-center w-8 h-8 cursor-pointer rounded-full",
+                "hover:bg-neutral-800 transform:bg duration-400 text-[var(--textColor-secondary)] active:bg-neutral-950"
+              )}
+            >
+              <CartIcon />
             </button>
             <Link href="/profile">
               <Avatar />

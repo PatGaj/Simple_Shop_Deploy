@@ -31,7 +31,6 @@ export function useCreateAccountLogic() {
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const alert = useAlert();
   const fetchWithRetry = useFetchWithRetry();
 
@@ -39,51 +38,57 @@ export function useCreateAccountLogic() {
   const {
     register,
     handleSubmit,
-    setValue,
-    trigger,
+    setError,
     reset,
     watch,
     formState: { errors, isSubmitting },
   } = form;
 
   const onSubmit = handleSubmit(async (data) => {
-    const baseUrl = process.env.NEXTAUTH_URL || "";
-    const url = `${baseUrl}/api/register`;
-    const sanitized = { ...data };
+    const baseUrl = process.env.NEXTAUTH_URL ?? "";
+    const res = await fetchWithRetry(`${baseUrl}/api/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
-    try {
-      await fetchWithRetry(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sanitized),
-      });
-      setSuccess(true);
-      reset();
-      alert({ type: "success", message: "Account created successfully!" });
-    } catch (err) {
-      console.error("Registration error:", err);
-      alert({ type: "danger", message: "Registration failed" });
+    if (!res.ok) {
+      const body = await res.json();
+      if (body.errors) {
+        Object.entries(body.errors as Record<string, { _errors: string[] }>).forEach(
+          ([field, info]) => {
+            setError(field as keyof FormData, {
+              type: "server",
+              message: info._errors[0],
+            });
+          }
+        );
+      } else {
+        alert({ type: "danger", message: "Registration failed" });
+      }
+      return;
     }
+
+    setSuccess(true);
+    reset();
+    alert({ type: "success", message: "Account created successfully!" });
   });
 
   const handleCountryChange = (val: string) => {
-    setValue("country", val);
-    trigger("country");
+    form.setValue("country", val);
+    form.trigger("country");
   };
   const handleTermsChange = (checked: boolean) => {
-    setValue("terms", checked);
-    trigger("terms");
+    form.setValue("terms", checked);
+    form.trigger("terms");
   };
-
-  const toggleShowPassword = () => setShowPassword((prev) => !prev);
-  const toggleShowConfirmPassword = () => setShowConfirmPassword((prev) => !prev);
 
   return {
     success,
     showPassword,
-    toggleShowPassword,
+    toggleShowPassword: () => setShowPassword((v) => !v),
     showConfirmPassword,
-    toggleShowConfirmPassword,
+    toggleShowConfirmPassword: () => setShowConfirmPassword((v) => !v),
     register,
     submitHandler: onSubmit,
     errors,

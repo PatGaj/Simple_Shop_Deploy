@@ -8,6 +8,7 @@ import TransactionDetails from "@/components/success/TransactionDetails";
 import OrderList from "@/components/success/OrderList";
 import SummaryDetails from "@/components/success/SummaryDetails";
 import { useSuccessLogic } from "./useSuccessLogic";
+import Loading from "@/components/ui/Loading";
 
 export default function CheckoutSuccessPage() {
   const {
@@ -20,15 +21,17 @@ export default function CheckoutSuccessPage() {
     totals,
   } = useSuccessLogic();
   const router = useRouter();
-
-  if (status === "loading") {
-    return <div>Weryfikuję sesję…</div>;
-  }
   if (status === "unauthenticated") {
+    router.push("/login");
     return <div>Musisz być zalogowany, żeby zobaczyć sukces zamówienia.</div>;
   }
+  
+  if (status === "loading") {
+    return <Loading text="Weryfikuję sesję…"/>;
+  }
+
   if (!totals) {
-    return <div>Loading your order…</div>;
+    return <Loading text="Loading your order…"/>;
   }
 
   return (
