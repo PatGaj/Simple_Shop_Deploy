@@ -29,9 +29,6 @@ Projekt symulacji sklepu internetowego stworzony w oparciu o **Next.js**, zgodni
 
 ![Speed insights w Vercel dla desktop](./public/screenshots/screeanshot1.png)
 
-![Speed insights w PageSpeed Insights dla desktop](./public/screenshots/screeanshot2.png)
-[Kliknij tutaj, aby przejść do Speed insights dla desktop](https://pagespeed.web.dev/analysis/https-simple-shop-sable-vercel-app/4zvi8pr2en?hl=pl&form_factor=desktop)
-
 ## Cel projektu
 
 Celem projektu jest stworzenie symulacji aplikacji e-commerce z następującymi kluczowymi funkcjonalnościami:
