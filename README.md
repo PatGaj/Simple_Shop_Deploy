@@ -25,14 +25,6 @@ Projekt symulacji sklepu internetowego stworzony w oparciu o **Next.js**, zgodni
 
 - **npm run start:all** - Uruchomienie bazy danych i aplikację w trybie deweloperskim.(po początkowej )
 
-# Speed insights
-
-![Speed insights dla mobile](./public/screenshots/screeanshot1.png)
-[Kliknij tutaj, aby przejść do Speed insights dla mobile](https://pagespeed.web.dev/analysis/https-simple-shop-sable-vercel-app/595qqxo3j5?hl=pl&form_factor=mobile)
-
-![Speed insights dla desktop](./public/screenshots/screeanshot2.png)
-[Kliknij tutaj, aby przejść do Speed insights dla desktop](https://pagespeed.web.dev/analysis/https-simple-shop-sable-vercel-app/595qqxo3j5?hl=pl&form_factor=desktop)
-
 ## Cel projektu
 
 Celem projektu jest stworzenie symulacji aplikacji e-commerce z następującymi kluczowymi funkcjonalnościami:
@@ -63,10 +55,10 @@ Aplikacja zostanie wdrożona na platformie **Vercel**, z pełną integracją bac
 
 # Galeria
 
-![Speed insights dla mobile](./public/screenshots/screeanshot3.png)
-![Speed insights dla mobile](./public/screenshots/screeanshot4.png)
-![Speed insights dla mobile](./public/screenshots/screeanshot5.png)
-![Speed insights dla mobile](./public/screenshots/screeanshot6.png)
-![Speed insights dla mobile](./public/screenshots/screeanshot7.png)
-![Speed insights dla mobile](./public/screenshots/screeanshot8.png)
-![Speed insights dla mobile](./public/screenshots/screeanshot9.png)
+![App View](./public/screenshots/screeanshot3.png)
+![App View](./public/screenshots/screeanshot4.png)
+![App View](./public/screenshots/screeanshot5.png)
+![App View](./public/screenshots/screeanshot6.png)
+![App View](./public/screenshots/screeanshot7.png)
+![App View](./public/screenshots/screeanshot8.png)
+![App View](./public/screenshots/screeanshot9.png)
